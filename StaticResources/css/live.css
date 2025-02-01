@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+/* 顶部导航栏样式 */
+#navbar {
+    background-color: #333;
+    padding: 10px;
+    text-align: center;
+}
+
+#navbar h1 {
+    margin: 0;
+    font-size: 20px;
+    color: #fff;
+}
+
+/* 通用容器样式 */
+#container {
+    display: flex;
+    height: calc(100vh - 111px);
+    /* 减去导航栏高度 */
+}
+
+#video-container {
+    flex: 1;
+    position: relative;
+}
+
+#videoElement {
+    width: 100%;
+    max-height: calc(100vh - 111px);
+}
+
+.error-msg {
+    text-align: center;
+    padding: 20px;
+}
+
+#danmaku-container {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#danmaku-container p {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    word-wrap: break-word;
+}
+
+.danmaku {
+    color: #ffcc00;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 弹幕输入框和按钮样式 */
+#danmaku-input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: unset;
+}
+
+#danmaku-input {
+    flex: 1;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0px;
+    width: auto;
+    text-align: center;
+    color: #bbb;
+    font-size: 12px;
+}
+
+/* 手机端竖屏 */
+@media (max-width: 768px) {
+    #container {
+        flex-direction: column;
+    }
+
+    #video-container {
+        flex: 1;
+    }
+
+    #danmaku-container {
+        height: auto;
+        flex-grow: 1;
+    }
+}
+
+/* 电脑端横屏 */
+@media (min-width: 769px) {
+    #container {
+        flex-direction: row;
+    }
+
+    #video-container {
+        width: 70%;
+        height: 100%;
+    }
+
+    #danmaku-container {
+        width: 30%;
+        height: 100%;
+        overflow-y: auto;
+        margin-left: 10px;
+    }
+
+    #danmaku-input-container {
+        width: 30%;
+        float: inline-end;
+    }
+}

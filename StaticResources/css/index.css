@@ -1,0 +1,68 @@
+* {
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+body,
+html {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+    height: 100%;
+    background-color: #282c34;
+}
+
+.item img {
+    height: 200px;
+}
+
+main {
+    padding-top: 80px;
+}
+
+.mdui-card {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.status {
+    position: absolute;
+    margin: 10px;
+    z-index: 1;
+}
+
+.people {
+    position: absolute;
+    margin: 10px;
+    right: 0;
+    z-index: 1;
+}
+
+#searchContainer {
+    bottom: 0px;
+    width: auto;
+    display: grid;
+    margin: 10px;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(2.5px) !important;
+    position: fixed;
+    z-index: 1;
+}
+
+canvas {
+    position: fixed;
+    display: block;
+}
+
+#copy {
+    bottom: 0px;
+    width: auto;
+    right: 0;
+    display: grid;
+    margin: 10px;
+    padding: 5px;
+    position: fixed;
+    z-index: 1;
+}
