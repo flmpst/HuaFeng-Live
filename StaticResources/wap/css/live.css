@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* 视频区域 */
+#video-container {
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+}
+
+video {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+}
+
+/* 聊天区 */
+#chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f4f4f4;
+}
+
+.chat-message {
+    padding: 8px;
+    background-color: #e2e2e2;
+    margin-bottom: 5px;
+}
+
+/* 输入框和发送按钮 */
+#input-container {
+    display: flex;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+}
+
+#message-input {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}

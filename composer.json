@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "ChatRoom\\": "System/"
+        }
+    },
+    "require": {
+        "erusev/parsedown": "^1.7",
+        "phpmailer/phpmailer": "^6.9"
+    }
+}

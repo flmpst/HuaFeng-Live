@@ -1,0 +1,31 @@
+* {
+    font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, ui-monospace;
+}
+
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+body::-webkit-scrollbar-track {
+    background-color: #f9f9f9;
+}
+
+/* 自定义弹窗样式 */
+.custom-dialog .mdui-dialog-title {
+    background-color: #2980B9;
+    color: white;
+}
+
+.custom-dialog .mdui-dialog-content {
+    background-color: #34495E;
+    /* 内容背景色 */
+}
+
+.custom-dialog .mdui-dialog-actions {
+    background-color: #2C3E50;
+}
