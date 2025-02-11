@@ -48,7 +48,9 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                     $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', $clientid);
                 }
                 if ($tokenManager->validateToken($clientid)) {
-                    $helpers->jsonResponse(200, true, $userHelpers->getUserInfoByEnv()['token']);
+                    // 如果验证通过，生成新的token
+                    $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer');
+                    $helpers->jsonResponse(200, true, $token);
                 } else {
                     $helpers->jsonResponse(401, false, 'ID不正确');
                 }
