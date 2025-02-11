@@ -2,7 +2,7 @@
 
 namespace ChatRoom\Core\Modules;
 
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 use PDOException;
 use Exception;
 use PDO;
@@ -13,23 +13,26 @@ class TokenManager
 
     public function __construct()
     {
-        $this->db = SqlLite::getInstance()->getConnection();
+        $this->db = Base::getInstance()->getConnection();
     }
 
     /**
      * 生成一个新的 token，并将其插入到数据库中
      * @param int $userId 用户ID
-     * @param string|null $expirationInterval 过期时间的间隔，默认是 '+1 hour'
+     * @param string|+1 hour $expirationInterval 过期时间的间隔，默认是 '+1 hour'
+     * @param stting|null $token 手动指定的 token 注意此方法不安全！
      * @return string 生成的 token
      * @throws Exception
      */
-    public function generateToken(int $userId, string $expirationInterval = '+1 hour'): string
+    public function generateToken(int $userId, string $expirationInterval = '+1 hour', $token = null): string
     {
         try {
             $this->db->beginTransaction();
 
-            // 给Token加点盐😋
-            $token = bin2hex(hash('sha256', random_bytes(32) . $userId, true));
+            if ($token === null) {
+                // 给Token加点盐😋
+                $token = bin2hex(hash('sha256', random_bytes(32) . $userId, true));
+            }
             $expiration = date('Y-m-d H:i:s', strtotime($expirationInterval));
             $createdAt = date('Y-m-d H:i:s');
 

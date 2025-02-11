@@ -1,4 +1,9 @@
 <?php
+// 判断是否进行客户端登录 method=clientAuth&clientid=xxxxx
+if (isset($_GET['method']) && $_GET['method'] === 'clientAuth' && isset($_GET['clientid'])) {
+    $method = 'clientAuth';
+    $clientid = $_GET['clientid'];
+}
 if (!$userHelpers->checkUserLoginStatus()) {
 ?>
     <div class="mdui-dialog custom-dialog" id="user">
@@ -48,7 +53,7 @@ if (!$userHelpers->checkUserLoginStatus()) {
                                     success: function(response) {
                                         $('#user-auth-msg').html(`<span class="mdui-color-red-a700">${response.message}</span>`);
                                         if (response.code === 200) {
-                                            location.href = '/';
+                                            location.href = '/?method=<?= $method ?>&clientid=<?= $clientid ?>';
                                         } else if (response.code === 401) {
                                             captcha.reset();
                                         }
@@ -123,6 +128,51 @@ if ($userHelpers->checkUserLoginStatus()) {
         </div>
     </div>
 
+    <?php
+    if ($method === 'clientAuth') {
+    ?>
+        <div class="mdui-dialog custom-dialog" id="client-auth">
+            <div class="mdui-dialog-title mdui-color-grey-800">
+                是否授权客户端？<span id="client-auth-msg"></span>
+            </div>
+            <form class="mdui-dialog-content mdui-typo" id="client-auth-form">
+                <div class="mdui-textfield mdui-textfield-floating-label mdui-text-color-white">
+                    <div class="mdui-col mdui-col-xs-2">
+                        <p>客户端ID：</p>
+                    </div>
+                    <div class="mdui-col mdui-col-xs-10">
+                        <pre id="api-token-display" class="mdui-text-color-white"><?= $clientid ?></pre>
+                    </div>
+                </div>
+            </form>
+            <div class="mdui-dialog-actions">
+                <button class="mdui-btn mdui-ripple" mdui-dialog-close id="client-auth-close">关闭</button>
+                <button class="mdui-btn mdui-btn-raised mdui-ripple" id="client-auth-btn">授权</button>
+            </div>
+        </div>
+        <script>
+            new mdui.Dialog('#client-auth').open();
+            $('#client-auth-btn').on('click', function() {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/v1/user/clientAuth?method=webAuth&clientid=<?= $clientid ?>",
+                    dataType: "JSON",
+                    success: function(response) {
+                        alert('成功授权，请在客户端查看');
+                        location.href = '/';
+                    },
+                    error: function(xhr) {
+                        $('#client-auth-msg').text(`网站服务端出错！${xhr.state} ${xhr.code}`);
+                    }
+                });
+            });
+            $('#client-auth-close').click(function(e) {
+                location.href = '/';
+            });
+        </script>
+    <?php
+    }
+    ?>
     <div class="mdui-dialog custom-dialog" id="add-live">
         <div class="mdui-dialog-title mdui-color-grey-800">
             创建直播 <span id="add-live-msg" class="mdui-color-red"></span>

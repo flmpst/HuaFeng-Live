@@ -14,10 +14,10 @@ class SQLite
     {
         try {
             // 确保数据库文件存在
-            if (empty(FRAMEWORK_DATABASE['host']) || !is_file(FRAMEWORK_DATABASE['host'])) {
+            if (empty(FRAMEWORK_DIR . FRAMEWORK_DATABASE['host']) || !is_file(FRAMEWORK_DIR . FRAMEWORK_DATABASE['host'])) {
                 throw new PDOException('数据库文件不存在，请检查配置文件！');
             }
-            $this->connection = new PDO('sqlite:' . FRAMEWORK_DATABASE['host']);
+            $this->connection = new PDO('sqlite:' . FRAMEWORK_DIR . FRAMEWORK_DATABASE['host']);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             // 设置 SQLite 超时时间和启用 WAL 模式
             $this->connection->exec('PRAGMA busy_timeout = 5000;');

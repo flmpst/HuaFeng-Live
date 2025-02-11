@@ -39,6 +39,24 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 $helpers->jsonResponse(401, '入机验证未通过');
             }
             break;
+        case 'clientAuth':
+            if ($userHelpers->checkUserLoginStatus()) {
+                // 验证clientid
+                $clientid = $_GET['clientid'];
+                $method = $_GET['method'];
+                if ($method === 'webAuth'){
+                    $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', $clientid);
+                }
+                if ($tokenManager->validateToken($clientid)) {
+                    $helpers->jsonResponse(200, true, $userHelpers->getUserInfoByEnv()['token']);
+                } else {
+                    $helpers->jsonResponse(401, false, 'ID不正确');
+                }
+            } else {
+                // 否则返回未登录状态
+                $helpers->jsonResponse(401, false);
+            }
+            break;
         case 'update':
             $userData = $userHelpers->getUserInfoByEnv();
             $update = $userHelpers->updateUser($userData['user_id'], ['username' => htmlspecialchars($_POST['username'])]);

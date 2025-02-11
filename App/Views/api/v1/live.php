@@ -40,6 +40,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $msg = true;
             if ($userInfo['user_id'] !== null) {
                 // 字段验证
+                unset($_POST['token']);
                 if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['videoSource']) || empty($_POST['videoSourceType'])) {
                     $msg = '所有字段都是必填的，星号为可选项';
                     $code = 400;

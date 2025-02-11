@@ -12,7 +12,7 @@ define('FRAMEWORK_DIR', dirname(__FILE__));
  * 
  * @var int
  */
-define('FRAMEWORK_VERSION', '1.4.1.0');
+define('FRAMEWORK_VERSION', '1.5.0.0');
 
 /**
  * 当前系统文件目录
@@ -41,8 +41,8 @@ define('FRAMEWORK_APP_PATH', FRAMEWORK_DIR . '/App');
  * @var array
  */
 define('FRAMEWORK_DATABASE', [
-    'driver' => 'mysql',
-    'host' => 'localhost',
+    'driver' => 'sqlite',
+    'host' => '/data.db',
     'port' => 3306,
     'dbname' => 'live',
     'username' => 'root',
