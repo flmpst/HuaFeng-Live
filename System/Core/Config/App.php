@@ -42,8 +42,8 @@ class App
      * @var array
      */
     public array $api = [
-        'enableCrossDomain' => true,
-        'allowCrossDomainlist' => '*'
+        'enableCrossDomain' => false, // 是否允许跨域
+        'allowCrossDomainlist' => '' // 允许跨域的域名列表
     ];
 
     /**
