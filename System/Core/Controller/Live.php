@@ -5,14 +5,17 @@ namespace ChatRoom\Core\Controller;
 use PDO;
 use Exception;
 use PDOException;
+use ChatRoom\Core\Helpers\User;
 use ChatRoom\Core\Database\SqlLite;
 
 class Live
 {
     private PDO $db;
+    private $userHelpers;
 
     public function __construct()
     {
+        $this->userHelpers = new User;
         $this->db = SqlLite::getInstance()->getConnection();
     }
 
@@ -36,7 +39,8 @@ class Live
 
                 // 尝试将值解析为JSON，如果解析成功则返回解析后的数组，否则返回原始值
                 $decodedValue = json_decode($value, true);
-                return json_last_error() === JSON_ERROR_NONE ? $decodedValue : $value;
+                $decodedValue['username'] = $this->userHelpers->getUserInfo(null, $decodedValue['user_id'])['username'];
+                return $decodedValue;
             }
 
             return [];

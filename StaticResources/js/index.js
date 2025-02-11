@@ -19,7 +19,7 @@ $(document).ready(function () {
                         <div class="mdui-card-primary">
                             <div class="mdui-card-primary-title">${item.name}</div>
                         </div>
-                        <div class="mdui-card-content">${item.description} 主播: ${item.authr}</div>
+                        <div class="mdui-card-content">${item.description} 主播: ${item.author}</div>
                     </div>
                 </div>
             </div>

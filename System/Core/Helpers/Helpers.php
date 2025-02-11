@@ -17,7 +17,7 @@ class Helpers
      */
     public function jsonResponse(int $statusCode, $message, array $data = []): string
     {
-        header('Content-Type: application/json');
+        header('Content-Type: application/json;charset=utf-8');
         // 构建JSON响应数据
         $response = [
             'APIVersion' => '1.0.0.0',

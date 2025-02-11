@@ -18,13 +18,13 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $list = $live->getAll();
             $data = []; // 用来存放格式化后的数据
             foreach ($list as $id => $item) {
-                $authr  = $userHelpers->getUserInfo(null, $item['user_id'])['username'];
+                $author = $userHelpers->getUserInfo(null, $item['user_id'])['username'];
                 $data[] = [
                     'id' => $id,
                     'name' => $item['name'],
                     'pic' => $item['pic'],
                     'status' => $item['status'],
-                    'authr' => $authr,
+                    'author' => $author,
                     'peoples' => $item['peoples'],
                     'description' => $item['description'],
                 ];
@@ -38,31 +38,34 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $return = [];
             $code = 200;
             $msg = true;
+            if ($userInfo['user_id'] !== null) {
+                // 字段验证
+                if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['videoSource']) || empty($_POST['videoSourceType'])) {
+                    $msg = '所有字段都是必填的，星号为可选项';
+                    $code = 400;
+                } elseif ($_POST['pic'] && !filter_var($_POST['pic'], FILTER_VALIDATE_URL)) {
+                    $msg = '封面URL格式不正确';
+                    $code = 400;
+                } elseif (!filter_var($_POST['videoSource'], FILTER_VALIDATE_URL)) {
+                    $msg = '直播源URL格式不正确';
+                    $code = 400;
+                } elseif (!in_array($_POST['videoSourceType'], ['flv', 'mp4', 'm3u8'])) {
+                    $msg = '直播源类型不支持';
+                    $code = 400;
+                } else {
+                    $_POST['status'] = 'on';
+                    $_POST['user_id'] = $userInfo['user_id'];
 
-            // 字段验证
-            if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['videoSource']) || empty($_POST['videoSourceType'])) {
-                $msg = '所有字段都是必填的，星号为可选项';
-                $code = 400;
-            } elseif ($_POST['pic'] && !filter_var($_POST['pic'], FILTER_VALIDATE_URL)) {
-                $msg = '封面URL格式不正确';
-                $code = 400;
-            } elseif (!filter_var($_POST['videoSource'], FILTER_VALIDATE_URL)) {
-                $msg = '直播源URL格式不正确';
-                $code = 400;
-            } elseif (!in_array($_POST['videoSourceType'], ['flv', 'mp4', 'm3u8'])) {
-                $msg = '直播源类型不支持';
-                $code = 400;
-            } else {
-                $_POST['status'] = 'on';
-                $_POST['user_id'] = $userInfo['user_id'];
-
-                // 保存直播信息
-                $add = $live->set($_POST);
-                if ($add) {
-                    $return = ['id' => $add];
+                    // 保存直播信息
+                    $add = $live->set($_POST);
+                    if ($add) {
+                        $return = ['id' => $add];
+                    }
                 }
+            } else {
+                $msg = '未登录';
+                $code = 403;
             }
-
             // 返回响应
             $helpers->jsonResponse($code, $msg, $return);
             break;
@@ -70,31 +73,36 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $userInfo = $userHelpers->getUserInfoByEnv();
             $code = 200;
             $msg = true;
-            // 必填字段验证
-            if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['videoSource']) || empty($_POST['videoSourceType'])) {
-                $msg = '所有字段都是必填的，星号为可选项';
-                $code = 400;
-            } elseif ($_POST['pic'] && !filter_var($_POST['pic'], FILTER_VALIDATE_URL)) {
-                $msg = '封面URL格式不正确';
-                $code = 400;
-            } elseif (!filter_var($_POST['videoSource'], FILTER_VALIDATE_URL)) {
-                $msg = '直播源URL格式不正确';
-                $code = 400;
-            } elseif (!in_array($_POST['videoSourceType'], ['flv', 'mp4', 'm3u8'])) {
-                $msg = '直播源类型不支持';
-                $code = 400;
-            } elseif ($userInfo['user_id'] !== $live->get((int)$_GET['liveId'])['user_id']) {
-                $msg = '搞错了！这不是你的直播间😅';
-                $code = 403;
-            } else {
-                // 保存直播信息
-                $_POST['user_id'] = $userInfo['user_id'];
-                $add = $live->set($_POST, (int)$_GET['liveId']);
-                if ($add) {
-                    $msg = true;
+            if ($userInfo['user_id'] !== null) {
+                // 必填字段验证
+                if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['videoSource']) || empty($_POST['videoSourceType'])) {
+                    $msg = '所有字段都是必填的，星号为可选项';
+                    $code = 400;
+                } elseif ($_POST['pic'] && !filter_var($_POST['pic'], FILTER_VALIDATE_URL)) {
+                    $msg = '封面URL格式不正确';
+                    $code = 400;
+                } elseif (!filter_var($_POST['videoSource'], FILTER_VALIDATE_URL)) {
+                    $msg = '直播源URL格式不正确';
+                    $code = 400;
+                } elseif (!in_array($_POST['videoSourceType'], ['flv', 'mp4', 'm3u8'])) {
+                    $msg = '直播源类型不支持';
+                    $code = 400;
+                } elseif ($userInfo['user_id'] !== $live->get((int)$_GET['liveId'])['user_id']) {
+                    $msg = '搞错了！这不是你的直播间😅';
+                    $code = 403;
                 } else {
-                    $msg = $add;
+                    // 保存直播信息
+                    $_POST['user_id'] = $userInfo['user_id'];
+                    $add = $live->set($_POST, (int)$_GET['liveId']);
+                    if ($add) {
+                        $msg = true;
+                    } else {
+                        $msg = $add;
+                    }
                 }
+            } else {
+                $msg = '未登录';
+                $code = 403;
             }
             $helpers->jsonResponse($code, $msg);
             break;

@@ -7,7 +7,7 @@ use ChatRoom\Core\Modules\TokenManager;
 use ChatRoom\Core\Controller\UserController;
 
 $appConfig = new App;
-$isLogin = new User;
+$userHelpers = new User;
 $tokenManager = new TokenManager;
 $userController = new UserController;
 
@@ -32,7 +32,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             }
             break;
         case 'auth':
-            if ($_SESSION['captcha_token'] === $_POST['captcha_token']){
+            if ($_SESSION['captcha_token'] === $_POST['captcha_token']) {
                 unset($_SESSION['captcha_token']);
                 $userController->auth($_POST['email'], $_POST['password']);
             } else {
@@ -40,7 +40,8 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             }
             break;
         case 'update':
-            $update = $userHelpers->updateUser($userHelpers->getUserInfoByEnv()['user_id'], ['username' => htmlspecialchars($_POST['username'])]);
+            $userData = $userHelpers->getUserInfoByEnv();
+            $update = $userHelpers->updateUser($userData['user_id'], ['username' => htmlspecialchars($_POST['username'])]);
             if ($update) {
                 $helpers->jsonResponse(200, true);
             } else {
