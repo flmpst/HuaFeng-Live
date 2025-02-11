@@ -5,7 +5,7 @@ namespace ChatRoom\Core\Controller;
 use PDOException;
 use ChatRoom\Core\Helpers\User;
 use ChatRoom\Core\Helpers\Helpers;
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 use ChatRoom\Core\Helpers\Email;
 use ChatRoom\Core\Modules\TokenManager;
 
@@ -52,7 +52,7 @@ class UserController
         try {
             $sedEmail = new Email;
             $ip = $this->userHelpers->getIp();
-            $db = SqlLite::getInstance()->getConnection();
+            $db = Base::getInstance()->getConnection();
 
             if (!$this->userHelpers->validateEmail($email)) {
                 return $this->Helpers->jsonResponse(400, "邮箱格式不合法");

@@ -6,7 +6,7 @@ use PDO;
 use Exception;
 use PDOException;
 use ChatRoom\Core\Helpers\User;
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 
 class Live
 {
@@ -16,7 +16,7 @@ class Live
     public function __construct()
     {
         $this->userHelpers = new User;
-        $this->db = SqlLite::getInstance()->getConnection();
+        $this->db = Base::getInstance()->getConnection();
     }
 
     /**

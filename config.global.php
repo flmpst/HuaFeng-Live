@@ -36,11 +36,19 @@ define('FRAMEWORK_CORE_DIR', FRAMEWORK_DIR . '/System/Core');
 define('FRAMEWORK_APP_PATH', FRAMEWORK_DIR . '/App');
 
 /**
- * SqlLite数据库文件路径(如果你觉得默认路径不安全请更改)
+ * 数据库配置
  * 
- * @var string
+ * @var array
  */
-define('FRAMEWORK_DATABASE_PATH', FRAMEWORK_DIR . '/Writable/data.db');
+define('FRAMEWORK_DATABASE', [
+    'driver' => 'mysql',
+    'host' => 'localhost',
+    'port' => 3306,
+    'dbname' => 'live',
+    'username' => 'root',
+    'password' => 'root',
+    'charset' => 'utf8mb4'
+]);
 
 /**
  * 安装锁 为true时表示已经安装

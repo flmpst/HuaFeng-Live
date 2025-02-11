@@ -4,14 +4,14 @@ namespace ChatRoom\Core\Controller;
 
 use PDO;
 use PDOException;
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 
 class Events
 {
     private $db;
     public function __construct()
     {
-        $this->db = SqlLite::getInstance()->getConnection(); // 获取数据库连接
+        $this->db = Base::getInstance()->getConnection(); // 获取数据库连接
     }
 
     /**

@@ -2,7 +2,7 @@
 
 use ChatRoom\Core\Config\App;
 use ChatRoom\Core\Helpers\User;
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 use ChatRoom\Core\Modules\TokenManager;
 use ChatRoom\Core\Controller\UserController;
 
@@ -52,7 +52,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             if ($tokenManager->validateToken($_GET['token'])) {
                 try {
                     $userInfoByToken = $tokenManager->getInfo($_GET['token']);
-                    $db = SqlLite::getInstance()->getConnection();
+                    $db = Base::getInstance()->getConnection();
                     $sqlUpdate = "UPDATE users SET status = 1 WHERE user_id = :user_id";
                     $stmtUpdate = $db->prepare($sqlUpdate);
                     $stmtUpdate->bindParam(':user_id', $userInfoByToken['user_id'], PDO::PARAM_INT);

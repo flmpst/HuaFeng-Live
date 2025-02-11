@@ -9,7 +9,7 @@ use PDOException;
 use ChatRoom\Core\Helpers\User;
 use ChatRoom\Core\Helpers\Helpers;
 use ChatRoom\Core\Controller\Live;
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 
 class ChatController
 {
@@ -44,7 +44,7 @@ class ChatController
         try {
             if ($this->live->get($roomId)) {
                 $userIP = new User;
-                $db = SqlLite::getInstance()->getConnection();
+                $db = Base::getInstance()->getConnection();
                 $stmt = $db->prepare('INSERT INTO messages (user_id, content, room_id, created_at, user_ip) VALUES (?, ?, ?, ?, ?)');
                 return $stmt->execute([$user['user_id'], $message, $roomId, date('Y-m-d H:i:s'), $userIP->getIp()]);
             }
@@ -63,7 +63,7 @@ class ChatController
     public function getMessagesByConditions(array $conditions): ?array
     {
         try {
-            $db = SqlLite::getInstance()->getConnection();
+            $db = Base::getInstance()->getConnection();
             $query = 'SELECT 
                     messages.id,
                     messages.type,
@@ -146,7 +146,7 @@ class ChatController
     public function getMessages($offset = 0, $limit = 10, int $roomId): array
     {
         try {
-            $db = SqlLite::getInstance()->getConnection();
+            $db = Base::getInstance()->getConnection();
             $query = 'SELECT
                         messages.id,
                         messages.type,
@@ -196,7 +196,7 @@ class ChatController
     public function getMessageCount(int $roomId): int
     {
         try {
-            $db = SqlLite::getInstance()->getConnection();
+            $db = Base::getInstance()->getConnection();
             $countQuery = 'SELECT COUNT(*) as total FROM messages WHERE room_id = :roomId';
             $stmt = $db->prepare($countQuery);
             $stmt->bindValue(':roomId', $roomId, PDO::PARAM_INT);

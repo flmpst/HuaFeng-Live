@@ -5,7 +5,7 @@ namespace ChatRoom\Core\Helpers;
 use PDO;
 use Exception;
 use Parsedown;
-use ChatRoom\Core\Database\SqlLite;
+use ChatRoom\Core\Database\Base;
 use ChatRoom\Core\Modules\TokenManager;
 use PDOException;
 use Throwable;
@@ -24,7 +24,7 @@ class User
     {
         $this->parsedown = new Parsedown();
         $this->userAgreementFile = FRAMEWORK_DIR . '/StaticResources/MarkDown/user.agreement.md';
-        $this->db = SqlLite::getInstance()->getConnection();
+        $this->db = Base::getInstance()->getConnection();
         $this->tokenManager = new TokenManager;;
     }
 
@@ -173,7 +173,7 @@ class User
      */
     public function updateUser(int $userId, array $data): bool
     {
-        $db = SqlLite::getInstance()->getConnection();
+        $db = Base::getInstance()->getConnection();
 
         try {
             if (!$db->inTransaction()) {
@@ -220,7 +220,7 @@ class User
     public function deleteUser(int $userId): bool
     {
         // 获取数据库连接实例
-        $db = SqlLite::getInstance()->getConnection();
+        $db = Base::getInstance()->getConnection();
 
         try {
             if (!$db->inTransaction()) {
