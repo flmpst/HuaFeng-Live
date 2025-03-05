@@ -50,36 +50,43 @@ class UserController
     public function register($email, $password)
     {
         try {
-            $sedEmail = new Email;
+            $emailSender = new Email;
             $ip = $this->userHelpers->getIp();
             $db = Base::getInstance()->getConnection();
 
+            // 校验邮箱格式
             if (!$this->userHelpers->validateEmail($email)) {
                 return $this->Helpers->jsonResponse(400, "邮箱格式不合法");
             }
 
-            // 检查邮箱是否重复
+            // 检查邮箱是否已被注册
             if ($this->userHelpers->isEmailTaken($email)) {
                 return $this->Helpers->jsonResponse(400, '邮箱已被注册');
             }
 
+            // 密码加密
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             // 插入用户数据
             $stmt = $db->prepare('INSERT INTO users (username, email, password, created_at, register_ip) VALUES (?, ?, ?, ?, ?)');
             $isSuccessful = $stmt->execute([$email, $email, $passwordHash, date('Y-m-d H:i:s'), $ip]);
 
+            // 获取用户信息
+            $userInfo = $this->userHelpers->getUserInfo(null, null, $email, false);
+
+            // 生成验证链接
+            $verificationLink = $this->Helpers->getCurrentUrl() . '/api/v1/user/verifyEmail?token=' . $this->tokenManager->generateToken($userInfo['user_id'], '+1 hour', \null, 'verifyEmail');
+
+            // 发送验证邮件
+            $emailContent = '点击此链接验证：<a href="' . $verificationLink . '">' . $verificationLink . '</a><br><br>如果您没有请求此操作，请忽略此邮件。';
+            if (!$emailSender->send('live@email.dfggmc.top', '花枫直播', $email, '验证您的邮箱', $emailContent)) {
+                return $this->Helpers->jsonResponse(500, '邮件发送失败');
+            }
+
             if ($isSuccessful) {
-                // 发送验证邮件
-                $userInfo = $this->userHelpers->getUserInfo(null, null, $email, false);
-                $verificationLink = $this->Helpers->getCurrentUrl() . '/api/v1/user/verifyEmail?token=' . $this->tokenManager->generateToken($userInfo['user_id'], '+1 hour');
-                if ($sedEmail->send('live@email.dfggmc.top', '花枫直播', $email, '验证您的邮箱', '点击此链接验证：<a href="' . $verificationLink . '">' . $verificationLink . '</a><br><br>如果您没有请求此操作，请忽略此邮件。')) {
-                    return $this->Helpers->jsonResponse(200, true);
-                } else {
-                    return $this->Helpers->jsonResponse(500, '邮件发送失败');
-                }
+                return $this->Helpers->jsonResponse(200, true);
             } else {
-                return $this->Helpers->jsonResponse(500, '注册失败，请重试');
+                return $this->Helpers->jsonResponse(500, '注册失败');
             }
         } catch (PDOException $e) {
             throw new PDOException('注册发生错误:' . $e);

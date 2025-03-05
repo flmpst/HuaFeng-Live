@@ -96,7 +96,9 @@ $userHelpers = new User;
             <video id="videoElement" controls></video>
             <div id="error-msg"></div>
         </div>
-        <div id="danmaku-container"></div>
+        <div id="danmaku-container">
+            <div id="liveInfo">主播: <img src="<?= $userHelpers->getAvatar($userHelpers->getUserInfo(null, $liveData['user_id'])['email'], 25) ?>" alt=""><?= $userHelpers->getUserInfo(null, $liveData['user_id'])['username'] ?> - <?= $liveData['description'] ?></div>
+        </div>
     </div>
 
     <div id="danmaku-input-container" class="mdui-textfield">

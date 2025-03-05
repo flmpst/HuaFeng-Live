@@ -19,6 +19,9 @@ class App
         '/index' => [
             'file' => ['/index.php'],
         ],
+        '/verify/client' => [
+            'file' => ['/clientAuth.php']
+        ],
         '/user/logout' => [
             'file' => ['/user/logout.php'],
         ],
@@ -52,8 +55,8 @@ class App
      * @var array
      */
     public array $geetest = [
-        'captchaId' => '',
-        'captchaKey' => ''
+        'captchaId' => '923777251d36339c575db1bef11bf24b',
+        'captchaKey' => '0165d8e6826dd61f46c5c79b161558a3'
     ];
 
     public array $email = [

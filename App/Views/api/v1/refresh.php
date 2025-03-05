@@ -6,4 +6,11 @@ use ChatRoom\Core\Modules\TokenManager;
 $tokenManager = new TokenManager;
 $userHelpers = new User;
 
-$helpers->jsonResponse(200, true, [$tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'])]);
+if (!$userHelpers->checkUserLoginStatus()) {
+    $helpers->jsonResponse(401, false, ['message' => 'You are not logged in']);
+}
+if ($_GET['method'] === 'refresh') {
+    $helpers->jsonResponse(200, true, [$tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+1 yer', null, 'api')]);
+} else {
+    $helpers->jsonResponse(200, true, [$tokenManager->delet($userHelpers->getUserInfoByEnv()['user_id'], '+1 yer', null, 'api')]);
+}

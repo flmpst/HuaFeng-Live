@@ -76,8 +76,7 @@ class Email
             $this->mail->AltBody = strip_tags($body);
 
             // 发送邮件
-            $this->mail->send();
-            return true;
+            return $this->mail->send();
         } catch (Exception) {
             throw new Exception("邮件发送失败。Mailer 错误: {$this->mail->ErrorInfo}");
         }

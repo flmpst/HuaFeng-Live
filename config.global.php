@@ -12,7 +12,7 @@ define('FRAMEWORK_DIR', dirname(__FILE__));
  * 
  * @var int
  */
-define('FRAMEWORK_VERSION', '1.5.0.1');
+define('FRAMEWORK_VERSION', '1.6.0.0');
 
 /**
  * 当前系统文件目录

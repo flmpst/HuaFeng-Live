@@ -59,7 +59,6 @@ body {
 
 #danmaku-container p {
     margin: 5px 0;
-    padding: 5px;
     background-color: rgba(255, 255, 255, 0.2);
     word-wrap: break-word;
 }
@@ -118,7 +117,10 @@ body {
 
     #video-container {
         width: 70%;
-        height: 100%;
+    }
+
+    #videoElement {
+        height: calc(100vh - 70px);
     }
 
     #danmaku-container {

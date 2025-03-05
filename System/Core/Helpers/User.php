@@ -132,7 +132,7 @@ class User
             } else {
                 // 否则，直接使用 POST 参数中的 token 获取信息
                 $token = $_POST['token'] ?? null;
-                $tokenInfo = $token ? $tokenManager->getInfo($token) : null;
+                $tokenInfo = $token ? $tokenManager->getInfo($token, 'api') ?? $tokenManager->getInfo($token, 'clientAuth') : null;
                 $return = $userHelpers->getUserInfo(null, $tokenInfo['user_id']);
             }
             // 返回用户信息，附加 token

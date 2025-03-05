@@ -44,12 +44,12 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 // 验证clientid
                 $clientid = $_GET['clientid'];
                 $method = $_GET['method'];
-                if ($method === 'webAuth'){
-                    $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', $clientid);
+                if ($method === 'webAuth') {
+                    $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', $clientid, 'clientAuth');
                 }
-                if ($tokenManager->validateToken($clientid)) {
+                if ($tokenManager->validateToken($clientid, 'clientAuth')) {
                     // 如果验证通过，生成新的token
-                    $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer');
+                    $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', null, 'clientAuth');
                     $helpers->jsonResponse(200, true, $token);
                 } else {
                     $helpers->jsonResponse(401, false, 'ID不正确');
@@ -69,9 +69,9 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             }
             break;
         case 'verifyEmail':
-            if ($tokenManager->validateToken($_GET['token'])) {
+            if ($tokenManager->validateToken($_GET['token'], 'verifyEmail')) {
                 try {
-                    $userInfoByToken = $tokenManager->getInfo($_GET['token']);
+                    $userInfoByToken = $tokenManager->getInfo($_GET['token'], 'verifyEmail');
                     $db = Base::getInstance()->getConnection();
                     $sqlUpdate = "UPDATE users SET status = 1 WHERE user_id = :user_id";
                     $stmtUpdate = $db->prepare($sqlUpdate);

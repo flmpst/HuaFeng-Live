@@ -214,7 +214,7 @@ class ChatController
      * 
      * @return array 在线用户数据
      */
-    private function getOnlineUsers($roomId): array
+    public function getOnlineUsers($roomId): array
     {
         // 确保直播间存在
         if ($this->live->get($roomId)) {

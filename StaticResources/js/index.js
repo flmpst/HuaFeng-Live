@@ -5,13 +5,12 @@ $(document).ready(function () {
     function renderList(data) {
         listContainer.empty();
         if (data.length === 0) {
-            listContainer.html(`未找到相关内容，要不然<button class="mdui-btn mdui-ripple mdui-btn-raised" mdui-dialog="{target: '#add-live'}">创建</button>一个？`);
+            listContainer.html(`<p class="mdui-text-color-white-text">未找到相关内容，要不然<button class="mdui-btn mdui-ripple mdui-btn-raised" mdui-dialog="{target: '#add-live'}">创建</button>一个？</p>`);
             return;
         }
         const cards = data.map(item => `
         <a href="${item.id}" class="mdui-col-md-3 mdui-m-b-3 mdui-hoverable item">
             <div class="mdui-card">
-                <span class="status">${item.status == '未在直播' ? 'live' : '直播中'}</span>
                 <span class="people"><i class="mdui-icon material-icons">people_outline</i>${item.peoples}</span>
                 <div class="mdui-card-media">
                     <img src="${item.pic || '/StaticResources/image/Image_330346604143.png'}">
@@ -148,18 +147,20 @@ $(document).ready(function () {
         });
     });
 
-    $('#copy-token-btn').on('click', function () {
-        const tokenText = $('#api-token-display').text();
-        navigator.clipboard.writeText(tokenText).then(function () {
-            mdui.snackbar({ message: 'Token 已复制到剪贴板！', timeout: 2000 });
-        }, function (err) {
-            mdui.snackbar({ message: '复制失败，请重试！', timeout: 2000 });
+    $(document).ready(function () {
+        $('.copy-token-btn').on('click', function () {
+            var token = $(this).data('token'); // 获取 data-token 属性
+            var $textArea = $('<textarea>').val(token).appendTo('body'); // 创建一个 textarea 并将 token 设置为其值
+            $textArea.select(); // 选择内容
+            document.execCommand('copy'); // 执行复制
+            $textArea.remove(); // 删除临时的 textarea
+            alert('Token 已复制!'); // 弹出提示
         });
     });
 
     $('#user-openapi-btn').on('click', function () {
         mdui.snackbar({
-            message: '您确定要重新生成 Token 吗？此操作将使当前 Token 无效。',
+            message: '您确定要删除所有 Token 吗？',
             buttonText: '是的，我确定',
             onButtonClick: function () {
                 $.ajax({
@@ -169,16 +170,38 @@ $(document).ready(function () {
                     success: function (response) {
                         if (response.code === 200) {
                             $('#api-token-display').text(response.data)
-                            mdui.snackbar({ message: `生成成功！`, timeout: 2000 });
+                            mdui.snackbar({ message: `成功！`, timeout: 2000 });
+                            location.href = '/';
                         } else {
-                            mdui.snackbar({ message: `生成失败！${response.message}`, timeout: 2000 });
+                            mdui.snackbar({ message: `失败！${response.message}`, timeout: 2000 });
                         }
                     },
                     error: function (xhr) {
-                        mdui.snackbar({ message: `生成失败！${xhr.message}`, timeout: 2000 });
+                        mdui.snackbar({ message: `失败！${xhr.message}`, timeout: 2000 });
                     }
                 });
             },
+        });
+    });
+
+    $('#user-openapi-new-btn').click(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/api/v1/refresh?method=refresh",
+            dataType: "JSON",
+            success: function (response) {
+                if (response.code === 200) {
+                    $('#api-token-display').text(response.data)
+                    mdui.snackbar({ message: `成功！`, timeout: 2000 });
+                    location.href = '/';
+                } else {
+                    mdui.snackbar({ message: `失败！${response.message}`, timeout: 2000 });
+                }
+            },
+            error: function (xhr) {
+                mdui.snackbar({ message: `失败！${xhr.message}`, timeout: 2000 });
+            }
         });
     });
 });

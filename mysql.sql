@@ -53,13 +53,14 @@ CREATE TABLE system_logs (
 );
 
 CREATE TABLE user_tokens (
-    id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL UNIQUE,
-    token VARCHAR(256) NOT NULL,
-    expiration DATETIME,
-    created_at DATETIME,
-    updated_at DATETIME,
-    PRIMARY KEY(id)
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  type INT NOT NULL,
+  token VARCHAR(256) NOT NULL,
+  expiration DATETIME NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
 );
 
 CREATE TABLE users (

@@ -56,11 +56,12 @@ CREATE TABLE "system_logs" (
 DROP TABLE IF EXISTS "user_tokens";
 CREATE TABLE "user_tokens" (
 	"id"	INTEGER NOT NULL UNIQUE,
-	"user_id" INTEGER NOT NULL UNIQUE,
+	"user_id"	INTEGER NOT NULL,
+	"type"	INTEGER NOT NULL,
 	"token"	VARCHAR(256) NOT NULL,
-	"expiration"	DATETIME,
-	"created_at"	DATETIME,
-	"updated_at"	DATETIME,
+	"expiration"	DATETIME NOT NULL,
+	"created_at"	DATETIME NOT NULL,
+	"updated_at"	DATETIME NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "users";

@@ -26,15 +26,16 @@ class Live
     public function get($liveId): array
     {
         try {
-            $stmt = $this->db->prepare("SELECT * FROM room_sets WHERE id = :id AND status = 'active'");
+            $stmt = $this->db->prepare("SELECT value, user_id FROM room_sets WHERE id = :id AND status = 'active'");
             $stmt->bindParam(':id', $liveId, PDO::PARAM_STR);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($result) {
-                $value = $result['value'];
-                return unserialize($value);
+                $value = unserialize($result['value']);
+                $value['user_id'] = $result['user_id'];
+                return $value;
             }
-            return null; // 如果没有找到相关数据，返回 null
+            return [];
         } catch (PDOException $e) {
             throw new Exception("获取直播信息出错: " . $e->getMessage());
         }
@@ -91,6 +92,7 @@ class Live
                 // 获取原始 value 字段
                 $value = $setting['value'];
                 $parsedValue = unserialize($value);
+                $parsedValue['user_id'] = $setting['user_id'];
                 $result[$setting['id']] = $parsedValue;
             }
             return $result;
