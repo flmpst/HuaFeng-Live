@@ -115,46 +115,58 @@ if ($userHelpers->checkUserLoginStatus()) {
             <p class="mdui-text-color-white">API TOKENS</p>
             <div class="mdui-row">
                 <div class="mdui-col mdui-col-xs-12">
-                    <ul id="api-token-list" class="mdui-list mdui-text-color-white">
-                        <?php
-                        $tokenManager = new TokenManager;
-                        $userId = $userHelpers->getUserInfoByEnv()['user_id'];
-                        $tokens = $tokenManager->getTokens($userId);
+                    <table class="mdui-table mdui-table-hoverable">
+                        <thead>
+                            <tr>
+                                <th>创建日期</th>
+                                <th>修改日期</th>
+                                <th>类型</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="api-token-list">
+                            <?php
+                            $tokenManager = new TokenManager;
+                            $userId = $userHelpers->getUserInfoByEnv()['user_id'];
+                            $tokens = $tokenManager->getTokens($userId);
 
-                        if (!empty($tokens)) {
-                            foreach ($tokens as $token) {
-                                // 使用 sprintf 来格式化输出，简化代码结构
-                                $listItem = sprintf(
-                                    '<li class="mdui-list-item">
-                                        <span class="mdui-list-item-content">创建日期: %s 修改日期: %s 类型: %s</span>
-                                        <button class="mdui-btn mdui-btn-icon mdui-ripple copy-token-btn" title="复制Token" data-token="%s">
-                                            <i class="mdui-icon material-icons">content_copy</i>
-                                        </button>
-                                    </li>',
-                                    htmlspecialchars($token['created_at']),
-                                    htmlspecialchars($token['updated_at']),
-                                    htmlspecialchars($token['type']),
-                                    htmlspecialchars($token['token'])
-                                );
-
-                                // 输出生成的 HTML
-                                echo $listItem;
+                            if (!empty($tokens)) {
+                                foreach ($tokens as $token) {
+                                    // 使用 sprintf 来格式化输出，简化代码结构
+                                    echo sprintf(
+                                        '<tr>
+                                        <td>%s</td>
+                                        <td>%s</td>
+                                        <td>%s</td>
+                                        <td>
+                                            <button class="mdui-btn mdui-btn-icon mdui-ripple copy-token-btn" title="复制Token" data-token="%s">
+                                                <i class="mdui-icon material-icons">content_copy</i>
+                                            </button>
+                                        </td>
+                                    </tr>',
+                                        htmlspecialchars($token['created_at']),
+                                        htmlspecialchars($token['updated_at']),
+                                        htmlspecialchars($token['type']),
+                                        htmlspecialchars($token['token'])
+                                    );
+                                }
+                            } else {
+                                echo '<tr><td colspan="5" class="mdui-text-center">没有API密钥</td></tr>';
                             }
-                        } else {
-                            echo '<li class="mdui-list-item">没有API密钥</li>';
-                        }
-                        ?>
-                    </ul>
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <p class="mdui-text-color-red-accent">警告：请务必妥善保管您的API密钥，拥有密钥等于拥有您的账号操作的一切权限， 如自行泄露密钥导致损失花枫工作室将不承担任何责任。</p>
-            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-text-color-white" id="user-openapi-btn">删除所有TOKEN</button>
-            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-text-color-white" id="user-openapi-new-btn">生成新的API TOKEN</button>
         </div>
         <div class="mdui-dialog-actions">
-            <button class="mdui-btn mdui-ripple" mdui-dialog-close mdui-dialog="{target: '#user-panel'}">返回设置面板</button>
+            <button class="mdui-btn mdui-ripple mdui-float-left" id="user-openapi-btn">删除所有TOKEN</button>
+            <button class="mdui-btn mdui-ripple mdui-float-left" id="user-openapi-new-btn">生成新的API TOKEN</button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple" mdui-dialog-close mdui-dialog="{target: '#user-panel'}">返回设置面板</button>
         </div>
     </div>
+
 
 
     <?php
