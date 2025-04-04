@@ -23,7 +23,7 @@ class SQLite
             $this->connection->exec('PRAGMA busy_timeout = 5000;');
             $this->connection->exec('PRAGMA journal_mode=WAL;');
         } catch (PDOException $e) {
-            throw new PDOException('SQLite数据库错误：' . $e);
+            throw new PDOException('SQLite数据库错误：' . $e->getMessage());
         }
     }
 

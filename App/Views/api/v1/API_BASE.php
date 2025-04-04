@@ -45,7 +45,7 @@ try {
         $getTrace = [];
     }
 
-    $errorMessage = '内部错误，请稍后再试。';
+    $errorMessage = $e->getMessage();
     $statusCode = 500;
     $helpers->jsonResponse($statusCode, $errorMessage, $getTrace);
 }

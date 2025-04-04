@@ -2,7 +2,6 @@
 
 use ChatRoom\Core\Config\App;
 use ChatRoom\Core\Helpers\User;
-use ChatRoom\Core\Database\Base;
 use ChatRoom\Core\Modules\TokenManager;
 use ChatRoom\Core\Controller\UserController;
 
@@ -40,54 +39,30 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             }
             break;
         case 'clientAuth':
-            if ($userHelpers->checkUserLoginStatus()) {
-                // 验证clientid
-                $clientid = $_GET['clientid'];
-                $method = $_GET['method'];
-                if ($method === 'webAuth') {
-                    $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', $clientid, 'clientAuth');
-                }
-                if ($tokenManager->validateToken($clientid, 'clientAuth')) {
-                    // 如果验证通过，生成新的token
-                    $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1yer', null, 'clientAuth');
-                    $helpers->jsonResponse(200, true, $token);
-                } else {
-                    $helpers->jsonResponse(401, false, 'ID不正确');
-                }
+            // 验证clientid
+            $clientid = $_GET['clientid'];
+            $method = $_GET['method'];
+            if ($method === 'webAuth') {
+                $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1year', $clientid, 'clientAuth');
+            }
+            if ($tokenManager->validateToken($clientid, 'clientAuth')) {
+                // 如果验证通过，生成新的token
+                $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1year', null, 'clientAuth');
+                $helpers->jsonResponse(200, true, [$token]);
             } else {
-                // 否则返回未登录状态
-                $helpers->jsonResponse(401, false);
+                $helpers->jsonResponse(401, 'ID不正确');
             }
             break;
         case 'update':
             $userData = $userHelpers->getUserInfoByEnv();
-            $update = $userHelpers->updateUser($userData['user_id'], ['username' => htmlspecialchars($_POST['username'])]);
+            if (empty($userData)) {
+                $helpers->jsonResponse(401, '未登录');
+            }
+            $update = $userController->updateUser($userData['user_id'], ['username' => htmlspecialchars($_POST['username'])]);
             if ($update) {
                 $helpers->jsonResponse(200, true);
             } else {
                 $helpers->jsonResponse(406, $update);
-            }
-            break;
-        case 'verifyEmail':
-            if ($tokenManager->validateToken($_GET['token'], 'verifyEmail')) {
-                try {
-                    $userInfoByToken = $tokenManager->getInfo($_GET['token'], 'verifyEmail');
-                    $db = Base::getInstance()->getConnection();
-                    $sqlUpdate = "UPDATE users SET status = 1 WHERE user_id = :user_id";
-                    $stmtUpdate = $db->prepare($sqlUpdate);
-                    $stmtUpdate->bindParam(':user_id', $userInfoByToken['user_id'], PDO::PARAM_INT);
-                    if ($stmtUpdate->execute()) {
-                        $tokenManager->delet($userInfoByToken['user_id']);
-                        $_SESSION['user_login_info'] = json_encode($userInfoByToken);
-                        $helpers->jsonResponse(200, true, '验证成功');
-                    } else {
-                        echo '未知错误';
-                    }
-                } catch (PDOException $e) {
-                    throw new PDOException('状态更新失败: ' . $e);
-                }
-            } else {
-                $helpers->jsonResponse(403, 'token验证失败');
             }
             break;
         case 'logout':

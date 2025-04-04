@@ -39,7 +39,7 @@ $userHelpers = new User;
             <div class="mdui-toolbar-spacer"></div>
             <a class="mdui-typo" href="/">返回首页</a>
             <?php
-            if ($liveData['user_id'] === $userHelpers->getUserInfoByEnv()['user_id']) {
+            if ($userHelpers->getUserInfoByEnv()['group_id'] === 1 || $liveData['user_id'] === $userHelpers->getUserInfoByEnv()['user_id']) {
             ?>
                 <button class="mdui-btn mdui-ripple mdui-btn-icon" mdui-dialog="{target: '#edit-live'}"><i class="mdui-icon material-icons">settings</i></button>
                 <div class="mdui-dialog custom-dialog" id="edit-live">
@@ -47,13 +47,6 @@ $userHelpers = new User;
                         修改直播间信息 <span id="edit-live-msg" class="mdui-color-red"></span>
                     </div>
                     <form class="mdui-dialog-content" id="edit-live-form">
-                        <label class="mdui-switch">
-                            <label class="mdui-text-color-white">是否正在直播</label>
-                            <input type="checkbox" name="status" <?php if ($liveData['status'] === 'on') {
-                                                                        echo 'checked';
-                                                                    } ?> />
-                            <i class="mdui-switch-icon"></i>
-                        </label>
                         <div class="mdui-textfield">
                             <label class="mdui-textfield-label mdui-text-color-white">直播间名称</label>
                             <input class="mdui-textfield-input mdui-text-color-white" name="name" type="text" value="<?= $liveData['name'] ?>" />
@@ -68,11 +61,11 @@ $userHelpers = new User;
                         </div>
                         <div class="mdui-textfield">
                             <label class="mdui-textfield-label mdui-text-color-white">直播源（推荐ipv4地址）</label>
-                            <input class="mdui-textfield-input mdui-text-color-white" name="videoSource" type="url" value="<?= $liveData['videoSource'] ?>" />
+                            <input class="mdui-textfield-input mdui-text-color-white" name="videoSource" type="url" value="<?= $liveData['video_source'] ?>" />
                         </div>
                         <div class="mdui-textfield">
                             <label class="mdui-textfield-label mdui-text-color-white">直播源类型</label>
-                            <input class="mdui-textfield-input mdui-text-color-white" name="videoSourceType" type="text" value="<?= $liveData['videoSourceType'] ?>" />
+                            <input class="mdui-textfield-input mdui-text-color-white" name="videoSourceType" type="text" value="<?= $liveData['video_source_type'] ?>" />
                         </div>
                         <div class="mdui-textfield">
                             <label class="mdui-textfield-label mdui-text-color-white">直播间自定义CSS样式不用写&lt;style&gt;&lt;/style&gt;</label>
@@ -80,7 +73,7 @@ $userHelpers = new User;
                         </div>
                     </form>
                     <div class="mdui-dialog-actions">
-                        <button class="mdui-btn mdui-ripple mdui-float-left" id="delet-live">删除直播间</button>
+                        <button class="mdui-btn mdui-ripple mdui-float-left" mdui-dialog-close id="delet-live">删除直播间</button>
                         <button class="mdui-btn mdui-ripple mdui-float-left" mdui-dialog-close>关闭</button>
                         <button class="mdui-btn mdui-btn-raised mdui-ripple" id="edit-live-btn">更新</button>
                     </div>
@@ -124,11 +117,13 @@ $userHelpers = new User;
     <script src="/StaticResources/js/live.js?<?= FRAMEWORK_VERSION ?>"></script>
     <script>
         const liveData = {
-            videoSource: "<?= $liveData['videoSource'] ?>",
-            videoSourceType: "<?= $liveData['videoSourceType'] ?>"
+            videoSource: "<?= $liveData['video_source'] ?>",
+            videoSourceType: "<?= $liveData['video_source_type'] ?>"
         };
         initializePlayer(liveData)
     </script>
 </body>
 
 </html>
+<?php
+require_once FRAMEWORK_APP_PATH . '/Views/module/common.php';

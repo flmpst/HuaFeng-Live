@@ -37,6 +37,7 @@ class Base
      */
     public static function getConnection(): PDO
     {
-        return self::getInstance()->getConnection();
+        $connection = self::getInstance()->getConnection();
+        return $connection;
     }
 }

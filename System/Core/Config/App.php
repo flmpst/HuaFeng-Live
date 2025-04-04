@@ -22,6 +22,12 @@ class App
         '/verify/client' => [
             'file' => ['/clientAuth.php']
         ],
+        '/verify/email' => [
+            'file' => ['/verifyEmail.php']
+        ],
+        '/module/search' => [
+            'file' => ['/module/search.html']
+        ],
         '/user/logout' => [
             'file' => ['/user/logout.php'],
         ],
@@ -30,12 +36,6 @@ class App
         ],
         '/api/v1/[\s\S]*' => [
             'file' => ['/api/v1/API_BASE.php']
-        ],
-        '/wap/index' => [
-            'file' => ['/wap/index.html']
-        ],
-        '/wap/live' => [
-            'file' => ['/wap/live.html']
         ]
     ];
 
@@ -45,8 +45,8 @@ class App
      * @var array
      */
     public array $api = [
-        'enableCrossDomain' => false, // 是否允许跨域
-        'allowCrossDomainlist' => '' // 允许跨域的域名列表
+        'enableCrossDomain' => true, // 是否允许跨域
+        'allowCrossDomainlist' => '*' // 允许跨域的域名列表
     ];
 
     /**
@@ -66,7 +66,19 @@ class App
             'password' => '',
             'port' => '',
             //加密方法 SSL、TLS
-            'secure' => ''
+            'secure' => 'ssl'
         ]
+    ];
+
+    /**
+     * 缓存配置
+     * 
+     * @var array
+     */
+    public array $cache = [
+        'enabled' => true,
+        'ttl' => 300,
+        'path' => FRAMEWORK_DIR . '/Writable/cache',
+        'prefix' => 'cache_'
     ];
 }

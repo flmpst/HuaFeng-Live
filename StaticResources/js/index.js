@@ -5,7 +5,7 @@ $(document).ready(function () {
     function renderList(data) {
         listContainer.empty();
         if (data.length === 0) {
-            listContainer.html(`<p class="mdui-text-color-white-text">未找到相关内容，要不然<button class="mdui-btn mdui-ripple mdui-btn-raised" mdui-dialog="{target: '#add-live'}">创建</button>一个？</p>`);
+            listContainer.html(`<p class="mdui-text-color-white-text">未找到相关内容，要不然创建一个？</p>`);
             return;
         }
         const cards = data.map(item => `
@@ -97,52 +97,68 @@ $(document).ready(function () {
     });
 
     $('#add-live-btn').on('click', function () {
-        $(this).prop('disabled', true);
+        const $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="mdui-icon material-icons">hourglass_empty</i> 创建中...');
 
-        const name = $("input[name='name']").val();
-        const pic = $("input[name='pic']").val();
-        const videoSource = $("input[name='videoSource']").val();
-        const videoSourceType = $("input[name='videoSourceType']").val();
+        // 获取表单数据
+        const form = document.getElementById('add-live-form');
+        const formData = new FormData(form);
 
+        // 手动添加其他字段（如果需要）
+        const name = $("input[name='name']").val().trim();
+        const videoSource = $("input[name='videoSource']").val().trim();
+        const videoSourceType = $("input[name='videoSourceType']").val().trim();
+
+        // 验证输入
         if (!name) {
             $('#add-live-msg').text('直播间名称不能为空');
-            $(this).prop('disabled', false);
+            $btn.prop('disabled', false).html('创建');
             return;
         }
 
-        const urlPattern = /\b(?:https?|http):\/\/(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}|\b(?:https?|http):\/\/(?:\d{1,3}\.){3}\d{1,3}|\b(?:https?|http):\/\/localhost(?::\d+)?(?:\/[^\s]*)?\b/;
-        if (pic && !urlPattern.test(pic)) {
-            $('#add-live-msg').text('封面URL无效');
-            $(this).prop('disabled', false);
-            return;
+        if (videoSource) {
+            try {
+                const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+                if (!urlPattern.test(videoSource)) {
+                    $('#add-live-msg').text('直播源URL无效');
+                    $btn.prop('disabled', false).html('创建');
+                    return;
+                }
+            } catch (error) {
+                console.error("URL验证错误:", error);
+            }
         }
-        if (videoSource && !urlPattern.test(videoSource)) {
-            $('#add-live-msg').text('直播源URL无效');
-            $(this).prop('disabled', false);
-            return;
-        }
-        if (!videoSourceType) {
+
+        if (videoSource && !videoSourceType) {
             $('#add-live-msg').text('直播源类型不能为空');
-            $(this).prop('disabled', false);
+            $btn.prop('disabled', false).html('创建');
             return;
         }
 
+        // 发送请求
         $.ajax({
             type: "POST",
             url: "/api/v1/live/create",
-            data: $('#add-live-form').serialize(),
-            dataType: "JSON",
+            data: formData,
+            processData: false,  // 重要：告诉jQuery不要处理数据
+            contentType: false,  // 重要：告诉jQuery不要设置Content-Type
+            dataType: "json",
             success: function (response) {
                 if (response.code === 200) {
-                    location.href = response.data.id;
+                    $('#add-live-msg').text('创建成功').removeClass('mdui-text-color-red').addClass('mdui-text-color-green');
+                    setTimeout(() => location.href = response.data.id || '/', 1000);
                 } else {
-                    $('#add-live-msg').text(`创建失败：${response.message}`);
-                    $('#add-live-btn').prop('disabled', false);
+                    $('#add-live-msg').text(`创建失败：${response.message || '未知错误'}`);
+                    $btn.prop('disabled', false).html('创建');
                 }
             },
             error: function (xhr) {
-                $('#add-live-msg').text(`创建失败：${xhr.status}`);
-                $('#add-live-btn').prop('disabled', false);
+                let errorMsg = `创建失败：${xhr.status}`;
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg += ` - ${xhr.responseJSON.message}`;
+                }
+                $('#add-live-msg').text(errorMsg);
+                $btn.prop('disabled', false).html('创建');
             }
         });
     });
@@ -155,6 +171,23 @@ $(document).ready(function () {
             document.execCommand('copy'); // 执行复制
             $textArea.remove(); // 删除临时的 textarea
             alert('Token 已复制!'); // 弹出提示
+        });
+
+        document.querySelectorAll('.toggle-extra-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const extraData = this.closest('.token-item').querySelector('.extra-data');
+                const icon = this.querySelector('.mdui-icon');
+
+                if (extraData.style.display === 'none') {
+                    extraData.style.display = 'block';
+                    icon.textContent = 'expand_less';
+                    this.setAttribute('title', '隐藏额外数据');
+                } else {
+                    extraData.style.display = 'none';
+                    icon.textContent = 'expand_more';
+                    this.setAttribute('title', '显示额外数据');
+                }
+            });
         });
     });
 

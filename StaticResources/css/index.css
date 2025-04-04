@@ -65,3 +65,32 @@ canvas {
     position: fixed;
     z-index: 1;
 }
+
+.token-item {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+}
+.token-item:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+.token-actions {
+    display: flex;
+    align-items: center;
+}
+.token-info {
+    margin-right: 15px;
+    display: inline-flex;
+    align-items: center;
+}
+.token-info .mdui-icon {
+    font-size: 18px;
+    margin-right: 5px;
+}
+.extra-data pre {
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    max-height: 200px;
+    white-space: normal;
+}

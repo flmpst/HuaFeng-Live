@@ -47,16 +47,14 @@ $userHelpers = new User;
         <div id="list" class="mdui-row"></div>
     </main>
 
-    <div class="mdui-container" id="searchContainer">
-        <div class="mdui-container mdui-textfield mdui-textfield-expandable">
-            <button class="mdui-textfield-icon mdui-btn mdui-btn-icon">
-                <i class="mdui-icon material-icons">search</i>
-            </button>
-            <input class="mdui-textfield-input" type="text" id="search" placeholder="实时搜索……">
-            <button class="mdui-textfield-close mdui-btn mdui-btn-icon">
-                <i class="mdui-icon material-icons">close</i>
-            </button>
-        </div>
+    <div class="mdui-dialog" id="search-dialog" style="background-color: #1e1e1e;">
+        <iframe runat="server" src="/module/search" width="100%" height="500px" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"></iframe>
+    </div>
+
+    <div id="searchContainer">
+        <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" mdui-dialog="{target: '#search-dialog'}">
+            <i class="mdui-icon material-icons">search</i> 打开搜索
+        </button>
     </div>
 
     <div id="copy">
@@ -73,3 +71,5 @@ $userHelpers = new User;
 </body>
 
 </html>
+<?php
+require_once FRAMEWORK_APP_PATH . '/Views/module/common.php';

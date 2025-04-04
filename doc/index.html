@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花枫Live V1 API 文档</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+
+        h3 {
+            margin-top: 20px;
+            color: #2980b9;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .endpoint {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 3px 10px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .method.get {
+            background-color: #2ecc71;
+        }
+
+        .method.post {
+            background-color: #f39c12;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .response-example {
+            margin-top: 10px;
+        }
+
+        .note {
+            background-color: #fffde7;
+            padding: 10px;
+            border-left: 4px solid #ffd600;
+            margin: 15px 0;
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>花枫Live V1 API 文档</h1>
+
+    <div class="note">
+        <p>
+            <strong>基础信息：</strong>
+        </p>
+        <ul>
+            <li>所有 API 路径前缀为 <code>/api/v1/</code></li>
+            <li>每个 POST 请求必须包含 <code>token</code> 参数（可在个人设置面板的开发者选项中获取）</li>
+        </ul>
+        <p>建议：</p>
+        <ul>
+            <li>客户端ID生成方法： <平台类型>-<设备标识>-<随机后缀> 如web-chrome-abc123 | ios-iphone-def456</li>
+        </ul>
+    </div>
+    <h2>直播</h2>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 获取直播列表</h3>
+        <p>
+            <code>/api/v1/live/list</code>
+        </p>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 获取指定直播间详细信息</h3>
+        <p>
+            <code>/api/v1/live/get?live_id={直播间id}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>live_id</td>
+                <td>integer</td>
+                <td class="required">是</td>
+                <td>直播间ID</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method post">POST</span> 创建直播间</h3>
+        <p>
+            <code>/api/v1/live/create</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>直播间描述</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>直播间名称</td>
+            </tr>
+            <tr>
+                <td>videoSource</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>直播源</td>
+            </tr>
+            <tr>
+                <td>videoSourceType</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>直播源类型</td>
+            </tr>
+            <tr>
+                <td>pic</td>
+                <td>string</td>
+                <td>否</td>
+                <td>封面图片URL，不填则使用默认图片</td>
+            </tr>
+        </table>
+
+        <div class="note">
+            <p>
+                <strong>允许的直播源类型：</strong>
+            </p>
+            <ul>
+                <li><code>flv</code></li>
+                <li><code>mp4</code></li>
+                <li><code>m3u8</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 删除直播间</h3>
+        <p>
+            <code>/api/v1/live/delet?liveId={直播间id}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>liveId</td>
+                <td>integer</td>
+                <td class="required">是</td>
+                <td>要删除的直播间ID</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method post">POST</span> 更新直播间信息</h3>
+        <p>
+            <code>/api/v1/live/update</code>
+        </p>
+        <p>
+            请求参数与创建直播间相同
+        </p>
+    </div>
+
+    <h3>直播间聊天</h3>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 获取聊天消息</h3>
+        <p>
+            <code>/api/v1/chat/get?room_id={直播间id}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>room_id</td>
+                <td>integer</td>
+                <td class="required">是</td>
+                <td>直播间ID</td>
+            </tr>
+            <tr>
+                <td>offset</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>偏移量，默认0</td>
+            </tr>
+            <tr>
+                <td>limit</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>限制返回数量，默认10</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method post">POST</span> 发送聊天消息</h3>
+        <p>
+            <code>/api/v1/chat/send?room_id={直播间id}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>room_id</td>
+                <td>integer</td>
+                <td class="required">是</td>
+                <td>直播间ID</td>
+            </tr>
+            <tr>
+                <td>message</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>消息内容</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 获取聊天消息总数</h3>
+        <p>
+            <code>/api/v1/chat/count?room_id={直播间id}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>room_id</td>
+                <td>integer</td>
+                <td class="required">是</td>
+                <td>直播间ID</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>用户</h2>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 获取当前登录用户信息</h3>
+        <p>
+            <code>/api/v1/user/get</code>
+        </p>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method post">POST</span> 验证（极验验证）</h3>
+        <p>
+            <code>/api/v1/user/captcha</code>
+        </p>
+        <p>
+            使用极验请求，成功后会返回验证token，服务端会保存token到PHP SESSION中
+        </p>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method post">POST</span> 登录/注册</h3>
+        <p>
+            <code>/api/v1/user/auth</code>
+        </p>
+
+        <div class="note">
+            <p>
+                <strong>注意：</strong>调用此API前需先完成极验验证
+            </p>
+        </div>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>captcha_token</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>极实验证token</td>
+            </tr>
+            <tr>
+                <td>email</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>邮箱</td>
+            </tr>
+            <tr>
+                <td>password</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>密码（明文）</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method post">POST</span> 更新用户信息</h3>
+        <p>
+            <code>/api/v1/user/update</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>username</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>新用户名</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 退出登录</h3>
+        <p>
+            <code>/api/v1/user/logout</code>
+        </p>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method get">GET</span> 获取新token</h3>
+        <p>
+            <code>/api/v1/refresh</code>
+        </p>
+    </div>
+
+    <h2>搜索</h2>
+
+    <div class="endpoint">
+        <h3><span class="method">GET</span> 用户搜索</h3>
+        <p>
+            <code>/api/v1/search/user?username={username}&status={status}&group_id={group_id}&page={page}&per_page={per_page}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>username</td>
+                <td>string</td>
+                <td>否</td>
+                <td>用户名模糊匹配</td>
+            </tr>
+            <tr>
+                <td>status</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>用户状态</td>
+            </tr>
+            <tr>
+                <td>group_id</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>用户组ID</td>
+            </tr>
+            <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>页码，默认为1</td>
+            </tr>
+            <tr>
+                <td>per_page</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>每页数量，默认为20</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method">GET</span> 直播搜索</h3>
+        <p>
+            <code>/api/v1/search/live?name={name}&description={description}&user_id={user_id}&status={status}&video_source_type={video_source_type}&page={page}&per_page={per_page}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>string</td>
+                <td>否</td>
+                <td>直播名称模糊匹配</td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>string</td>
+                <td>否</td>
+                <td>直播描述模糊匹配</td>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>主播用户ID</td>
+            </tr>
+            <tr>
+                <td>status</td>
+                <td>string</td>
+                <td>否</td>
+                <td>直播状态</td>
+            </tr>
+            <tr>
+                <td>video_source_type</td>
+                <td>string</td>
+                <td>否</td>
+                <td>视频源类型</td>
+            </tr>
+            <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>页码，默认为1</td>
+            </tr>
+            <tr>
+                <td>per_page</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>每页数量，默认为20</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method">GET</span> 全局搜索</h3>
+        <p>
+            <code>/api/v1/search/global?keyword={keyword}&page={page}&per_page={per_page}</code>
+        </p>
+
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>keyword</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>搜索关键词</td>
+            </tr>
+            <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>页码，默认为1</td>
+            </tr>
+            <tr>
+                <td>per_page</td>
+                <td>integer</td>
+                <td>否</td>
+                <td>每页数量，默认为20</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>用户自定义设置</h2>
+
+    <h3>设置命名规范</h3>
+    <p>
+        推荐使用点分命名法组织设置名称：
+    </p>
+    <ul>
+        <li><code>ui.theme.color</code> - 界面主题颜色</li>
+        <li><code>notifications.email.enabled</code> - 邮件通知开关</li>
+        <li><code>editor.font.size</code> - 编辑器字体大小</li>
+    </ul>
+
+    <div class="endpoint">
+        <h3><span class="method">GET</span> 获取设置</h3>
+        <p>
+            <code>/api/v1/user_settings/get?user_id={user_id}&client_id={client_id}&setting_name={setting_name}</code>
+        </p>
+        <h4>请求参数</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>用户UUID</td>
+            </tr>
+            <tr>
+                <td>client_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>客户端ID</td>
+            </tr>
+            <tr>
+                <td>setting_name</td>
+                <td>string</td>
+                <td>否</td>
+                <td>指定设置名，不传则返回所有设置</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method">POST</span> 设置配置项</h3>
+        <p>
+            <code>/api/v1/user_settings/set</code>
+        </p>
+        <h4>请求参数 (表单数据)</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>用户UUID</td>
+            </tr>
+            <tr>
+                <td>client_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>客户端ID</td>
+            </tr>
+            <tr>
+                <td>setting_name</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>设置名称(最大100字符)</td>
+            </tr>
+            <tr>
+                <td>setting_value</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>设置值(JSON字符串)</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method">POST</span> 删除配置项</h3>
+        <p>
+            <code>/api/v1/user_settings/delete</code>
+        </p>
+        <h4>请求参数 (表单数据)</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>用户UUID</td>
+            </tr>
+            <tr>
+                <td>client_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>客户端ID</td>
+            </tr>
+            <tr>
+                <td>setting_name</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>要删除的设置名</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="endpoint">
+        <h3><span class="method">POST</span> 同步设置</h3>
+        <p>
+            <code>/api/v1/user_settings/sync</code>
+        </p>
+        <h4>请求参数 (表单数据)</h4>
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>描述</th>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>用户UUID</td>
+            </tr>
+            <tr>
+                <td>source_client_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>源客户端ID</td>
+            </tr>
+            <tr>
+                <td>target_client_id</td>
+                <td>string</td>
+                <td class="required">是</td>
+                <td>目标客户端ID</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>公用错误响应</h2>
+    <table>
+        <tr>
+            <th>HTTP 状态码</th>
+            <th>错误信息</th>
+            <th>描述</th>
+        </tr>
+        <tr>
+            <td>400</td>
+            <td>Invalid API method</td>
+            <td>API方法名称无效</td>
+        </tr>
+        <tr>
+            <td>406</td>
+            <td>方法不存在</td>
+            <td>请求的API方法不存在</td>
+        </tr>
+        <tr>
+            <td>500</td>
+            <td>内部错误</td>
+            <td>系统炸了，联系站长吧(</td>
+        </tr>
+    </table>
+
+    <h2>更新日志</h2>
+    <p>
+        <strong>2025 年 4 月 2 日 v1.1更新：</strong>
+    </p>
+    <ul>
+        <li>删除 <code>/api/v1/user/verifyEmail</code> 替换为 <code>/verify/email</code></li>
+        <li>添加 <code>/api/v1/search/</code></li>
+    </ul>
+    <hr>
+    <p>
+        <strong>2025 年 4 月 3 日 v1.2更新：</strong>
+    </p>
+    <ul>
+        <li>添加 <code>/api/v1/user_settings</code></li>
+    </ul>
+    <script type="text/javascript" charset="utf-8">
+        /**
+        * 自动生成API文档侧边栏
+        */
+        document.addEventListener('DOMContentLoaded', function () {
+            // 创建侧边栏容器
+            const sidebar = document.createElement('div');
+            sidebar.id = 'api-sidebar';
+            sidebar.style.cssText = `
+			position: fixed;
+			top: 20px;
+			left: 20px;
+			width: 250px;
+			max-height: calc(100vh - 40px);
+			overflow-y: auto;
+			background-color: #f8f9fa;
+			border-radius: 8px;
+			padding: 15px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+			z-index: 1000;
+			`;
+
+            // 添加标题
+            const sidebarTitle = document.createElement('h3');
+            sidebarTitle.textContent = 'API 导航';
+            sidebarTitle.style.cssText = `
+			color: #2c3e50;
+			margin-top: 0;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #e0e0e0;
+			`;
+            sidebar.appendChild(sidebarTitle);
+
+            // 创建导航列表
+            const navList = document.createElement('ul');
+            navList.style.cssText = `
+			list-style: none;
+			padding-left: 0;
+			margin: 0;
+			`;
+
+            // 获取所有h2标题
+            const h2Elements = document.querySelectorAll('h2');
+
+            h2Elements.forEach((h2, index) => {
+                // 为h2添加id以便跳转
+                const id = `section-${index}`;
+                h2.id = id;
+
+                // 创建导航项
+                const navItem = document.createElement('li');
+                navItem.style.marginBottom = '8px';
+
+                const navLink = document.createElement('a');
+                navLink.href = `#${id}`;
+                navLink.textContent = h2.textContent;
+                navLink.style.cssText = `
+				display: block;
+				padding: 6px 10px;
+				color: #3498db;
+				text-decoration: none;
+				border-radius: 4px;
+				transition: all 0.2s;
+				`;
+
+                // 悬停效果
+                navLink.addEventListener('mouseover', () => {
+                    navLink.style.backgroundColor = '#e8f4fc';
+                });
+
+                navLink.addEventListener('mouseout', () => {
+                    navLink.style.backgroundColor = 'transparent';
+                });
+
+                // 点击效果
+                navLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById(id).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+
+                    // 移除所有active类
+                    document.querySelectorAll('#api-sidebar a').forEach(link => {
+                        link.style.backgroundColor = 'transparent';
+                        link.style.fontWeight = 'normal';
+                    });
+
+                    // 添加active类
+                    navLink.style.backgroundColor = '#e8f4fc';
+                    navLink.style.fontWeight = 'bold';
+                });
+
+                navItem.appendChild(navLink);
+                navList.appendChild(navItem);
+            });
+
+            sidebar.appendChild(navList);
+            document.body.appendChild(sidebar);
+
+            // 添加样式用于侧边栏链接的active状态
+            const style = document.createElement('style');
+            style.textContent = `
+			#api-sidebar a.active {
+			background-color: #e8f4fc;
+			font-weight: bold;
+			}
+
+			@media (max-width: 1200px) {
+			#api-sidebar {
+			display: none;
+			}
+			}
+			`;
+            document.head.appendChild(style);
+
+            // 监听滚动事件，高亮当前可见的章节
+            window.addEventListener('scroll', function () {
+                const fromTop = window.scrollY + 100;
+
+                document.querySelectorAll('#api-sidebar a').forEach(link => {
+                    const section = document.querySelector(link.getAttribute('href'));
+
+                    if (
+                        section.offsetTop <= fromTop &&
+                        section.offsetTop + section.offsetHeight > fromTop
+                    ) {
+                        link.style.backgroundColor = '#e8f4fc';
+                        link.style.fontWeight = 'bold';
+                    } else {
+                        link.style.backgroundColor = 'transparent';
+                        link.style.fontWeight = 'normal';
+                    }
+                });
+            });
+
+            // 添加关闭按钮
+            const closeButton = document.createElement('button');
+            closeButton.textContent = '×';
+            closeButton.style.cssText = `
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: none;
+			border: none;
+			font-size: 20px;
+			cursor: pointer;
+			color: #7f8c8d;
+			`;
+
+            closeButton.addEventListener('click', () => {
+                sidebar.style.display = 'none';
+            });
+
+            sidebar.appendChild(closeButton);
+
+            // 添加响应式显示/隐藏按钮
+            const toggleButton = document.createElement('button');
+            toggleButton.id = 'sidebar-toggle';
+            toggleButton.textContent = '☰';
+            toggleButton.style.cssText = `
+			position: fixed;
+			top: 20px;
+			left: 20px;
+			width: 40px;
+			height: 40px;
+			background-color: #3498db;
+			color: white;
+			border: none;
+			border-radius: 50%;
+			font-size: 20px;
+			cursor: pointer;
+			z-index: 999;
+			display: none;
+			`;
+
+            toggleButton.addEventListener('click', () => {
+                sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+            });
+
+            document.body.appendChild(toggleButton);
+
+            // 响应式处理
+            function handleResize() {
+                if (window.innerWidth <= 1200) {
+                    sidebar.style.display = 'none';
+                    toggleButton.style.display = 'block';
+                } else {
+                    sidebar.style.display = 'block';
+                    toggleButton.style.display = 'none';
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+    </script>
+</body>
+
+</html>

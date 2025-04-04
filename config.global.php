@@ -7,12 +7,14 @@
  */
 define('FRAMEWORK_DIR', dirname(__FILE__));
 
+define('FRAMEWORK_DEBUG', true);
+
 /**
  * 定义版本
  * 
  * @var int
  */
-define('FRAMEWORK_VERSION', '1.6.0.0');
+define('FRAMEWORK_VERSION', '2.3.0.0');
 
 /**
  * 当前系统文件目录
@@ -36,18 +38,23 @@ define('FRAMEWORK_CORE_DIR', FRAMEWORK_DIR . '/System/Core');
 define('FRAMEWORK_APP_PATH', FRAMEWORK_DIR . '/App');
 
 /**
+ * 日志目录
+ */
+define('FRAMEWORK_LOG_DIR', FRAMEWORK_DIR . '/Writable/logs');
+
+/**
  * 数据库配置
  * 
  * @var array
  */
 define('FRAMEWORK_DATABASE', [
-    'driver' => 'sqlite',
-    'host' => '/data.db',
+    'driver' => 'mysql',
+    'host' => 'localhost',
     'port' => 3306,
-    'dbname' => 'live',
+    'dbname' => 'huafeng_live',
     'username' => 'root',
-    'password' => 'root',
-    'charset' => 'utf8mb4'
+    'password' => '',
+    'charset' => ''
 ]);
 
 /**

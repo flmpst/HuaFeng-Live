@@ -2,11 +2,13 @@
 
 namespace ChatRoom\Core\Controller;
 
+use Exception;
 use PDOException;
+use ChatRoom\Core\Config\App;
 use ChatRoom\Core\Helpers\User;
-use ChatRoom\Core\Helpers\Helpers;
 use ChatRoom\Core\Database\Base;
 use ChatRoom\Core\Helpers\Email;
+use ChatRoom\Core\Helpers\Helpers;
 use ChatRoom\Core\Modules\TokenManager;
 
 class UserController
@@ -51,6 +53,7 @@ class UserController
     {
         try {
             $emailSender = new Email;
+            $appConfig = new App;
             $ip = $this->userHelpers->getIp();
             $db = Base::getInstance()->getConnection();
 
@@ -75,11 +78,11 @@ class UserController
             $userInfo = $this->userHelpers->getUserInfo(null, null, $email, false);
 
             // 生成验证链接
-            $verificationLink = $this->Helpers->getCurrentUrl() . '/api/v1/user/verifyEmail?token=' . $this->tokenManager->generateToken($userInfo['user_id'], '+1 hour', \null, 'verifyEmail');
+            $verificationLink = $this->Helpers->getCurrentUrl() . '/verify/email?token=' . $this->tokenManager->generateToken($userInfo['user_id'], '+1 hour', null, 'verifyEmail');
 
             // 发送验证邮件
             $emailContent = '点击此链接验证：<a href="' . $verificationLink . '">' . $verificationLink . '</a><br><br>如果您没有请求此操作，请忽略此邮件。';
-            if (!$emailSender->send('live@email.dfggmc.top', '花枫直播', $email, '验证您的邮箱', $emailContent)) {
+            if (!$emailSender->send($appConfig->email['smtp']['username'], '花枫直播', $email, '验证您的邮箱', $emailContent)) {
                 return $this->Helpers->jsonResponse(500, '邮件发送失败');
             }
 
@@ -89,7 +92,7 @@ class UserController
                 return $this->Helpers->jsonResponse(500, '注册失败');
             }
         } catch (PDOException $e) {
-            throw new PDOException('注册发生错误:' . $e);
+            throw new PDOException('注册发生错误:' . $e->getMessage());
         }
     }
 
@@ -115,7 +118,7 @@ class UserController
             }
             return $this->Helpers->jsonResponse(200, '登录成功', $this->updateLoginInfo($user));
         } catch (PDOException $e) {
-            throw new PDOException('登录发生错误:' . $e);
+            throw new PDOException('登录发生错误:' . $e->getMessage());
             if ($return) {
                 return "内部服务器错误。请联系管理员。";
             } else {
@@ -136,5 +139,47 @@ class UserController
         $user['token'] = bin2hex(hash('sha256', random_bytes(32) . $user['user_id'], true));
         $_SESSION['user_login_info'] = json_encode($user);
         return $user;
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param int $userId 用户ID
+     * @param array $data 包含用户更新信息的关联数组
+     *                    格式为 ['username' => '新用户名', 'email' => '新邮箱']
+     * @return bool 更新是否成功
+     * @throws Exception
+     */
+    public function updateUser(int $userId, array $data): bool
+    {
+        $db = Base::getInstance()->getConnection();
+
+        try {
+            if (!$db->inTransaction()) {
+                $db->beginTransaction();
+            }
+            $fields = [];
+            $params = [':user_id' => $userId];
+            foreach ($data as $key => $value) {
+                $fields[] = "$key = :$key";
+                $params[":$key"] = $value;
+            }
+            if (empty($fields)) {
+                return true;
+            }
+            $fieldsString = implode(', ', $fields);
+            $stmt = $db->prepare("UPDATE users SET $fieldsString WHERE user_id = :user_id");
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+            $db->commit();
+            return true;
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            throw new PDOException("更新用户信息出错:" . $e->getMessage());
+        }
     }
 }

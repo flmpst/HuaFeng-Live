@@ -4,7 +4,6 @@ namespace ChatRoom\Core\Helpers;
 
 use PDO;
 use Exception;
-use Parsedown;
 use ChatRoom\Core\Database\Base;
 use ChatRoom\Core\Modules\TokenManager;
 use PDOException;
@@ -15,15 +14,11 @@ use Throwable;
  */
 class User
 {
-    private Parsedown $parsedown;
     private $db;
     protected $tokenManager;
-    private string $userAgreementFile;
 
     public function __construct()
     {
-        $this->parsedown = new Parsedown();
-        $this->userAgreementFile = FRAMEWORK_DIR . '/StaticResources/MarkDown/user.agreement.md';
         $this->db = Base::getInstance()->getConnection();
         $this->tokenManager = new TokenManager;;
     }
@@ -82,7 +77,7 @@ class User
 
             return $userInfo ?: [];
         } catch (Exception $e) {
-            throw new PDOException("查询用户信息出错:" . $e);
+            throw new PDOException("查询用户信息出错:" . $e->getMessage());
         }
     }
 
@@ -105,7 +100,7 @@ class User
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            throw new PDOException("查询分页用户出错:" . $e);
+            throw new PDOException("查询分页用户出错:" . $e->getMessage());
         }
     }
 
@@ -115,34 +110,32 @@ class User
      * 返回结构与数据库一致
      *
      * @return array
+     * @throws Exception
      */
     public function getUserInfoByEnv(): array
     {
         try {
-            $tokenManager = new TokenManager;
-            $userHelpers = new User();
+            $token = $_POST['token'] ?? null;
+            $userLoginInfo = json_decode($_SESSION['user_login_info'] ?? '', true);
 
-            // 获取会话中的用户信息
-            $userCookieInfo = json_decode($_SESSION['user_login_info'] ?? '', true);
-
-            // 如果会话中有用户信息，则使用会话信息获取用户信息
-            if (!empty($userCookieInfo) && !empty($userCookieInfo['token'])) {
-                $token = $userCookieInfo['token'];
-                $return = $userHelpers->getUserInfo(null, $userCookieInfo['user_id']);
+            if (!empty($userLoginInfo['token'])) {
+                $token = $userLoginInfo['token'];
+                $userId = $userLoginInfo['user_id'];
+            } elseif (!empty($token)) {
+                $tokenInfo = $this->tokenManager->getInfo($token, 'api') ?? $this->tokenManager->getInfo($token, 'clientAuth');
+                $userId = $tokenInfo['user_id'] ?? null;
             } else {
-                // 否则，直接使用 POST 参数中的 token 获取信息
-                $token = $_POST['token'] ?? null;
-                $tokenInfo = $token ? $tokenManager->getInfo($token, 'api') ?? $tokenManager->getInfo($token, 'clientAuth') : null;
-                $return = $userHelpers->getUserInfo(null, $tokenInfo['user_id']);
-            }
-            // 返回用户信息，附加 token
-            if ($token) {
-                $return['token'] .= $token;
+                return [];
             }
 
-            return $return;
+            $userInfo = $this->getUserInfo(null, $userId);
+            if ($token) {
+                $userInfo['token'] = $token;
+            }
+
+            return $userInfo;
         } catch (Throwable $e) {
-            throw new Exception('根据当前环境获取用户信息出错：' . $e);
+            throw new Exception('根据当前环境获取用户信息出错：' . $e->getMessage());
         }
     }
 
@@ -158,103 +151,8 @@ class User
             $stmt = $this->db->query("SELECT COUNT(*) FROM users");
             return (int)$stmt->fetchColumn();
         } catch (Exception $e) {
-            throw new PDOException("获取用户总数出错:" . $e);
+            throw new PDOException("获取用户总数出错:" . $e->getMessage());
         }
-    }
-
-    /**
-     * 更新用户信息
-     *
-     * @param int $userId 用户ID
-     * @param array $data 包含用户更新信息的关联数组
-     *                    格式为 ['username' => '新用户名', 'email' => '新邮箱']
-     * @return bool 更新是否成功
-     * @throws Exception
-     */
-    public function updateUser(int $userId, array $data): bool
-    {
-        $db = Base::getInstance()->getConnection();
-
-        try {
-            if (!$db->inTransaction()) {
-                $db->beginTransaction();
-            }
-
-            $fields = [];
-            $params = [':user_id' => $userId];
-
-            foreach ($data as $key => $value) {
-                $fields[] = "$key = :$key";
-                $params[":$key"] = $value;
-            }
-
-            if (empty($fields)) {
-                return true;
-            }
-
-            $fieldsString = implode(', ', $fields);
-            $stmt = $db->prepare("UPDATE users SET $fieldsString WHERE user_id = :user_id");
-
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-
-            $stmt->execute();
-            $db->commit();
-
-            return true;
-        } catch (Exception $e) {
-            if ($db->inTransaction()) {
-                $db->rollBack();
-            }
-            throw new PDOException("更新用户信息出错:" . $e);
-        }
-    }
-
-    /**
-     * 删除指定用户
-     *
-     * @param integer $userId
-     * @return boolean
-     */
-    public function deleteUser(int $userId): bool
-    {
-        // 获取数据库连接实例
-        $db = Base::getInstance()->getConnection();
-
-        try {
-            if (!$db->inTransaction()) {
-                $db->beginTransaction();
-            }
-
-            $stmt = $db->prepare("DELETE FROM users WHERE user_id = :user_id");
-            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-            $stmt->execute();
-            $db->commit();
-
-            return true;
-        } catch (Exception $e) {
-            if ($db->inTransaction()) {
-                $db->rollBack();
-            }
-            throw new PDOException("删除用户出错:" . $e);
-        }
-    }
-
-    /**
-     * 获取用户协议文件内容并解析
-     *
-     * @param bool $raw 是否返回原始内容
-     * @return string
-     */
-    public function readUserAgreement(bool $raw = false): string
-    {
-        if (!file_exists($this->userAgreementFile)) {
-            return '用户协议文件不存在。';
-        }
-
-        $fileContents = file_get_contents($this->userAgreementFile);
-        return $raw ? $fileContents : $this->parsedown->text($fileContents);
     }
 
     /**
@@ -272,7 +170,7 @@ class User
 
             return $stmt->fetchColumn() > 0;
         } catch (Exception $e) {
-            throw new PDOException("检查用户名是否被使用出错:" . $e);
+            throw new PDOException("检查用户名是否被使用出错:" . $e->getMessage());
         }
     }
 
@@ -317,11 +215,11 @@ class User
      */
     public function getAvatar($email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array())
     {
-        $url = 'https://cravatar.cn/avatar/';
+        $url = 'https://cravatar.com/avatar/';
         $url .= md5(strtolower(trim($email)));
         $url .= "?s=$s&d=$d&r=$r";
         if ($img) {
-            $url = '<img class="mdui-img-circle" src="' . $url . '"';
+            $url = '<img src="' . $url . '"';
             foreach ($atts as $key => $val)
                 $url .= ' ' . $key . '="' . $val . '"';
             $url .= ' />';
@@ -352,7 +250,7 @@ class User
                 return false;
             }
         } catch (Exception $e) {
-            throw new PDOException("获取用户登录状态出错:" . $e);
+            throw new PDOException("获取用户登录状态出错:" . $e->getMessage());
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ChatRoom\Core;
 
-use ChatRoom\Core\Helpers\WebSecurity;
+use ChatRoom\Core\Modules\WebSecurity;
 
 /**
  *     _____   _ ________                     ________          __  ____  ____  ____  __  ___
@@ -47,11 +47,31 @@ class Main
      */
     private function initialize(): void
     {
-        require_once __DIR__ . '/../../config.global.php';
-        require_once FRAMEWORK_DIR . '/System/Core/Helpers/HandleException.php';
-        require_once FRAMEWORK_DIR . '/System/Core/Helpers/Waf.php';
-        set_error_handler('HandleException');
-        set_exception_handler('HandleException');
+        require_once FRAMEWORK_DIR . '/System/Core/Modules/HandleException.php';
+        require_once FRAMEWORK_DIR . '/System/Core/Modules/Waf.php';
+
+        /**
+         * 注册错误处理函数
+         */
+        set_exception_handler(function ($e) {
+            HandleException($e);
+        });
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+            if (!(error_reporting() & $errno)) {
+                return false;
+            }
+            $exception = new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+            HandleException($exception);
+            return true;
+        });
+        register_shutdown_function(function () {
+            $error = error_get_last();
+            if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+                $exception = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
+                HandleException($exception, false, true);
+            }
+        });
+
         session_set_cookie_params([
             'lifetime' => 2592000,
             'path' => '/',
@@ -61,7 +81,7 @@ class Main
         ]);
         session_start();
         date_default_timezone_set("Asia/Shanghai");
-        // 创建类实例并执行请求检查
+        // 系统防护
         $security = new WebSecurity();
         $security->checkRequest();
     }

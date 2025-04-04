@@ -4,6 +4,7 @@ namespace ChatRoom\Core\Database;
 
 use PDO;
 use PDOException;
+use ChatRoom\Core\Database\DebugPDOStatement;
 
 class MySQL
 {
@@ -16,14 +17,12 @@ class MySQL
             $dsn = 'mysql:host=' . FRAMEWORK_DATABASE['host'] . ';dbname=' . FRAMEWORK_DATABASE['dbname'];
             $username = FRAMEWORK_DATABASE['username'];
             $password = FRAMEWORK_DATABASE['password'];
-            $options = [
-                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-            ];
+            $options = [];
 
             $this->connection = new PDO($dsn, $username, $password, $options);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new PDOException('MySQL数据库错误：' . $e);
+            throw new PDOException('MySQL数据库错误：' . $e->getMessage());
         }
     }
 
@@ -47,6 +46,10 @@ class MySQL
      */
     public function getConnection(): PDO
     {
+        // 调试模式下记录查询
+        if (defined('FRAMEWORK_DEBUG') && FRAMEWORK_DEBUG) {
+            $this->connection->setAttribute(PDO::ATTR_STATEMENT_CLASS, [DebugPDOStatement::class, [$this->connection]]);
+        }
         return $this->connection;
     }
 }

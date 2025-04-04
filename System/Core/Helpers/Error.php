@@ -150,8 +150,7 @@ class Error
                 <p class="p1">:(</p>
                 <p class="p2"><?= htmlspecialchars($title); ?></p>
                 <p class="p3">正在收集错误信息<span class="ds">0%</span></p>
-                <div class="p4"><img style="width: 137px; height: 137px; margin-right: 20px;" src="/StaticResources/image/httpsbri6.cnarchives405.html.png
-		" alt="QRCODE">
+                <div class="p4">
                     <div>
                         <p class="p5">有关此问题的详细信息是：</p>
                         <ul class="p6">

@@ -4,11 +4,12 @@ namespace ChatRoom\Core;
 
 /**
  * 路由类
- * 
+ *
  */
 
-use ChatRoom\Core\Config\App;
 use Exception;
+use ChatRoom\Core\Config\App;
+use ChatRoom\Core\Helpers\Error;
 
 class Route
 {
@@ -30,16 +31,17 @@ class Route
         }
 
         $handler = $this->findHandler($this->currentUri);
+        $error = new Error();
         if ($handler) {
             $filePath = realpath(FRAMEWORK_APP_PATH . '/Views' . $handler['file'][0]);
 
             if ($filePath && is_file($filePath)) {
                 include $filePath;
             } else {
-                throw new Exception("路由规则配置错误，视图文件不存在！");
+                $error->http(404, '404 路由规则配置错误，视图文件不存在！', '404 页面不存在');
             }
         } else {
-            throw new Exception('404 页面不存在，请刷新重试');
+            $error->http(404, '404 路由规则配置错误，未找到匹配的路由！', '404 页面不存在');
         }
     }
 
