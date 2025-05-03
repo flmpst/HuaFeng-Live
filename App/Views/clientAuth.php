@@ -43,7 +43,7 @@ try {
                 throw new Exception('用户未登录');
             }
 
-            $token = $tokenManager->generateToken($userInfo['user_id'], '+1 year', null, 'clientAuth', ['clientid' => $_GET['clientid']]);
+            $token = $tokenManager->generateToken($userInfo['user_id'], 'clientAuth', '+1 year', null,  ['clientid' => $_GET['clientid']]);
             // 直接跳转而不是设置状态
             header("Location: " . $callback . '?succeed=true&msg=' . urlencode('授权成功') . '&token=' . urlencode($token));
             exit;
@@ -97,7 +97,7 @@ function validateCSRFToken($token)
             max-width: 600px;
             margin: 0 auto;
             background-color: #fff;
-            border-radius: 8px;
+            border-radius: 4px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-top: 100px;
         }

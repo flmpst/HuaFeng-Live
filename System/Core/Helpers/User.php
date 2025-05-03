@@ -115,25 +115,37 @@ class User
     public function getUserInfoByEnv(): array
     {
         try {
+            // 首先检查请求头中是否有 Authorization Token
             $token = $_POST['token'] ?? null;
+            $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+
+            // 如果请求头中有 Authorization Token，优先使用
+            if ($authorizationHeader) {
+                $token = str_replace('Bearer ', '', $authorizationHeader);  // 如果是 Bearer Token 格式
+            }
+
+            // 从 session 中获取用户登录信息
             $userLoginInfo = json_decode($_SESSION['user_login_info'] ?? '', true);
 
+            // 如果 session 中有 token，使用 session 中的 token
             if (!empty($userLoginInfo['token'])) {
                 $token = $userLoginInfo['token'];
                 $userId = $userLoginInfo['user_id'];
             } elseif (!empty($token)) {
-                $tokenInfo = $this->tokenManager->getInfo($token, 'api') ?? $this->tokenManager->getInfo($token, 'clientAuth');
+                // 如果传入了 token，根据 token 获取用户信息
+                $tokenInfo = $this->tokenManager->getInfo($token, 'clientAuth') ?? $this->tokenManager->getInfo($token, 'api');
                 $userId = $tokenInfo['user_id'] ?? null;
             } else {
                 return [];
             }
 
+            // 获取用户信息
             $userInfo = $this->getUserInfo(null, $userId);
             if ($token) {
                 $userInfo['token'] = $token;
             }
 
-            return $userInfo;
+            return $userInfo ?? [];
         } catch (Throwable $e) {
             throw new Exception('根据当前环境获取用户信息出错：' . $e->getMessage());
         }
@@ -210,7 +222,7 @@ class User
      * @param string $r 最大评级（包括）[g | pg | r | x]
      * @param boole $img True仅为URL返回完整的img标签False
      * @param array $atts 可选，IMG标签中包含的额外的键值对属性
-     * @return 只包含URL或完整图像标签的字符串
+     * @return string URL或img标签
      * @来源https://cravatar.com/developer/php-image-requests
      */
     public function getAvatar($email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array())

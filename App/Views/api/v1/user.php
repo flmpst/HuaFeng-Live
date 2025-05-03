@@ -31,7 +31,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             }
             break;
         case 'auth':
-            if ($_SESSION['captcha_token'] === $_POST['captcha_token']) {
+            if (isset($_SESSION['captcha_token'], $_POST['captcha_token']) && $_SESSION['captcha_token'] === $_POST['captcha_token']) {
                 unset($_SESSION['captcha_token']);
                 $userController->auth($_POST['email'], $_POST['password']);
             } else {
@@ -42,12 +42,21 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             // 验证clientid
             $clientid = $_GET['clientid'];
             $method = $_GET['method'];
+
+            // 前端确认第三方客户端
+            // 生成一个临时的token，过期时间为1小时
             if ($method === 'webAuth') {
-                $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1year', $clientid, 'clientAuth');
+                $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], 'clientAuth', '+ 1hour', $clientid, ['说明' => '前端临时验证']);
+                $helpers->jsonResponse(
+                    200,
+                    true
+                );
             }
+
+            // 客户端轮询请求
             if ($tokenManager->validateToken($clientid, 'clientAuth')) {
                 // 如果验证通过，生成新的token
-                $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], '+ 1year', null, 'clientAuth');
+                $token = $tokenManager->generateToken($userHelpers->getUserInfoByEnv()['user_id'], 'clientAuth', '+ 1year', null, ['clientid' => $clientid]);
                 $helpers->jsonResponse(200, true, [$token]);
             } else {
                 $helpers->jsonResponse(401, 'ID不正确');
@@ -55,7 +64,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             break;
         case 'update':
             $userData = $userHelpers->getUserInfoByEnv();
-            if (empty($userData)) {
+            if (empty($userData) || !isset($userData['user_id'])) {
                 $helpers->jsonResponse(401, '未登录');
             }
             $update = $userController->updateUser($userData['user_id'], ['username' => htmlspecialchars($_POST['username'])]);

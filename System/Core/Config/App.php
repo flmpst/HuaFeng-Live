@@ -34,9 +34,15 @@ class App
         '/[0-9]*' => [
             'file' => ['/live.php']
         ],
+        '/api/v1/verify/email' => [
+            'file' => ['/verifyEmail.php']
+        ],
+        '/api/v1/verify/client' => [
+            'file' => ['/clientAuth.php']
+        ],
         '/api/v1/[\s\S]*' => [
             'file' => ['/api/v1/API_BASE.php']
-        ]
+        ],
     ];
 
     /**

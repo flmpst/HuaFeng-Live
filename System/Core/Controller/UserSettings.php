@@ -47,7 +47,7 @@ class UserSettings
                 $result[$row['setting_name']] = unserialize($row['setting_value']);
             }
 
-            return $setting_name !== null ? ($result[$setting_name] ?? null) : $result;
+            return $setting_name !== null ? ($result[$setting_name] ?? []) : $result;
         } catch (PDOException $e) {
             throw new Exception("获取用户设置失败: " . $e->getMessage());
         }

@@ -16,7 +16,6 @@ $method = isset(explode('/', trim($uri, '/'))[3]) ? explode('/', trim($uri, '/')
 
 // 验证 API 名称是否符合字母和数字的格式，且长度不超过 30
 if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
-
     $message = htmlspecialchars(trim($_POST['message'] ?? ''), ENT_QUOTES, 'UTF-8');
     $userInfo = $userHelpers->getUserInfoByEnv();
     $rooId = isset($_GET['room_id']) ? (int)$_GET['room_id'] : 0;

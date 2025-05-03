@@ -1,5 +1,4 @@
 <?php
-
 use ChatRoom\Core\Config\App;
 use ChatRoom\Core\Controller\Live;
 use ChatRoom\Core\Controller\Chat;
@@ -88,7 +87,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $picUrl = null;
             if (isset($_FILES['pic']) && $_FILES['pic']['error'] === UPLOAD_ERR_OK) {
                 // 处理上传
-                $picUrl = $fileUpload->upload($_FILES['pic'], $userInfo['user_id']);
+                $picUrl = 'https://live.dfggmc.top' . $fileUpload->upload($_FILES['pic'], $userInfo['user_id']);
             } elseif (!empty($_POST['pic'])) {
                 if (!filter_var($_POST['pic'], FILTER_VALIDATE_URL)) {
                     $helpers->jsonResponse(400, '封面URL格式不正确');
@@ -207,7 +206,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             }
 
             $liveData = $live->get((int)$_GET['liveId']);
-            if ($liveData === null) {
+            if (empty($liveData)) {
                 $helpers->jsonResponse(404, '直播间不存在');
                 exit;
             }

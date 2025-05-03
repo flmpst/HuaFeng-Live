@@ -78,7 +78,7 @@ class UserController
             $userInfo = $this->userHelpers->getUserInfo(null, null, $email, false);
 
             // 生成验证链接
-            $verificationLink = $this->Helpers->getCurrentUrl() . '/verify/email?token=' . $this->tokenManager->generateToken($userInfo['user_id'], '+1 hour', null, 'verifyEmail');
+            $verificationLink = $this->Helpers->getCurrentUrl() . '/verify/email?token=' . $this->tokenManager->generateToken($userInfo['user_id'], 'verifyEmail', '+1 hour', null);
 
             // 发送验证邮件
             $emailContent = '点击此链接验证：<a href="' . $verificationLink . '">' . $verificationLink . '</a><br><br>如果您没有请求此操作，请忽略此邮件。';

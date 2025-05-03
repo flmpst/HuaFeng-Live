@@ -25,10 +25,9 @@ try {
         }
     }
 
-    // 验证 API 名称是否符合字母和数字的格式
-    if (!preg_match('/^[a-zA-Z0-9]+$/', $apiName)) {
-        $helpers->jsonResponse(403, '无效的API名称!');
-    }
+if (!preg_match('/^[a-zA-Z0-9_]+$/', $apiName)) {
+    $helpers->jsonResponse(403, '无效的API名称!');
+}
 
     $apiFile = __DIR__ . "/$apiName.php";
 

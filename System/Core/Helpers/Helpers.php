@@ -20,7 +20,7 @@ class Helpers
         header('Content-Type: application/json;charset=utf-8');
         // 构建JSON响应数据
         $response = [
-            'APIVersion' => '1.2.0.0',
+            'APIVersion' => '1.2.1.0',
             'code' => $statusCode,
             'message' => $message,
             'data' => $data

@@ -118,7 +118,7 @@ $(document).ready(function () {
 
         if (videoSource) {
             try {
-                const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+                const urlPattern = /^(https?:\/\/)?([^\s/?.#]+\.?)+(:\d+)?([/?][^\s]*)?$/i;
                 if (!urlPattern.test(videoSource)) {
                     $('#add-live-msg').text('直播源URL无效');
                     $btn.prop('disabled', false).html('创建');

@@ -53,7 +53,7 @@ class Search
         // 基础SQL
         $sql = "SELECT user_id, username, email, group_id, created_at, status FROM users WHERE 1=1";
         $countSql = "SELECT COUNT(*) as total FROM users WHERE 1=1";
-        $where = [];
+        $where[] = "status != 'delete'";
         $bindParams = [];
 
         // 构建WHERE条件
@@ -133,7 +133,7 @@ class Search
         // 基础SQL
         $sql = "SELECT id, user_id, name, pic, description, video_source_type, status FROM live_list WHERE 1=1";
         $countSql = "SELECT COUNT(*) as total FROM live_list WHERE 1=1";
-        $where = [];
+        $where[] = "status != 'delete'";
         $bindParams = [];
 
         // 构建WHERE条件
@@ -217,10 +217,12 @@ class Search
         // 搜索用户
         $userSql = "SELECT user_id, email, username, group_id, created_at
                    FROM users
-                   WHERE username LIKE ? OR email LIKE ?
+                   WHERE status != 'delete' AND (username LIKE ? OR email LIKE ?)
                    LIMIT " . (($page - 1) * $perPage) . ", {$perPage}";
 
-        $userCountSql = "SELECT COUNT(*) as total FROM users WHERE username LIKE ? OR email LIKE ?";
+        $userCountSql = "SELECT COUNT(*) as total
+                        FROM users
+                        WHERE status != 'delete' AND (username LIKE ? OR email LIKE ?)";
 
         $stmt = $db->prepare($userCountSql);
         $stmt->execute(['%' . $keyword . '%', '%' . $keyword . '%']);
@@ -239,10 +241,12 @@ class Search
         // 搜索直播
         $liveSql = "SELECT id, user_id, name, pic, description, video_source_type
                    FROM live_list
-                   WHERE name LIKE ? OR description LIKE ?
+                   WHERE status != 'delete' AND (name LIKE ? OR description LIKE ?)
                    LIMIT " . (($page - 1) * $perPage) . ", {$perPage}";
 
-        $liveCountSql = "SELECT COUNT(*) as total FROM live_list WHERE name LIKE ? OR description LIKE ?";
+        $liveCountSql = "SELECT COUNT(*) as total 
+                        FROM live_list 
+                        WHERE status != 'delete' AND (name LIKE ? OR description LIKE ?)";
 
         $stmt = $db->prepare($liveCountSql);
         $stmt->execute(['%' . $keyword . '%', '%' . $keyword . '%']);

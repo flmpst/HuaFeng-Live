@@ -1,12 +1,14 @@
 <?php
 // 判断是否进行客户端登录 method=clientAuth&clientid=xxxxx
 
+$method = 'default';
+$clientid = '';
+
 use ChatRoom\Core\Modules\TokenManager;
-$method = null;
-$clientid = null;
+
 if (isset($_GET['method']) && $_GET['method'] === 'clientAuth' && isset($_GET['clientid'])) {
     $method = 'clientAuth';
-    $clientid = $_GET['clientid'];
+    $clientid = $_GET['clientid'] ?? null;
 }
 if (!$userHelpers->checkUserLoginStatus()) {
 ?>
@@ -26,6 +28,7 @@ if (!$userHelpers->checkUserLoginStatus()) {
             </div>
         </form>
         <div class="mdui-dialog-actions">
+            <a href="https://live.dfggmc.top/disclaimer.html" target="_blank" rel="noopener noreferrer" class="mdui-btn mdui-ripple mdui-typo">继续填写则同意《免责声明》</a>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
             <button class="mdui-btn mdui-btn-raised mdui-ripple" id="user-auth-btn" style="display: none;">登录/注册</button>
         </div>

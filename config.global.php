@@ -7,14 +7,12 @@
  */
 define('FRAMEWORK_DIR', dirname(__FILE__));
 
-define('FRAMEWORK_DEBUG', true);
-
 /**
  * 定义版本
  * 
  * @var int
  */
-define('FRAMEWORK_VERSION', '2.3.0.0');
+define('FRAMEWORK_VERSION', '2.4.0.0');
 
 /**
  * 当前系统文件目录
