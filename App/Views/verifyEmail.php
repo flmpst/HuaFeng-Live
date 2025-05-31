@@ -198,7 +198,7 @@ try {
                 <div class="action-buttons">
                     <a href="<?= htmlspecialchars($state['redirect'], ENT_QUOTES, 'UTF-8') ?>"
                         class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme">
-                        <i class="mdui-icon material-icons">account_circle</i> 立即前往个人中心
+                        <i class="mdui-icon material-icons">account_circle</i> 立即前往主页
                     </a>
                 </div>
                 <script>

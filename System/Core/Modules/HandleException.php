@@ -1,5 +1,7 @@
 ﻿<?php
 
+use ChatRoom\Core\Helpers\Helpers;
+
 /**
  * 自定义错误处理
  *
@@ -22,11 +24,15 @@ function HandleException($e, $saveLog = false, $isFatal = false)
         return;
     }
 
-    header('Content-Type: application/json');
-    echo json_encode([
-        'error' => true,
+    $helpers = new Helpers;
+    http_response_code(500);
+    $helpers->jsonResponse(500, '内部错误，请稍后再试。', [
         'message' => $e->getMessage(),
-        'trace' => defined('FRAMEWORK_DEBUG') && FRAMEWORK_DEBUG ? $e->getTrace() : null
+        'file' => basename($e->getFile()),
+        'line' => $e->getLine(),
+        'trace' => defined('FRAMEWORK_DEBUG') && FRAMEWORK_DEBUG ? $e->getTrace() : null,
+        'code_snippet' => getCodeSnippet($e->getFile(), $e->getLine()),
+        'variables' => safeVarExport(get_defined_vars())
     ]);
     exit;
 
@@ -44,7 +50,7 @@ function HandleException($e, $saveLog = false, $isFatal = false)
  */
 function logException($e)
 {
-    $logDir = defined('FRAMEWORK_LOG_DIR') ? FRAMEWORK_LOG_DIR : __DIR__ . '/logs';
+    $logDir = FRAMEWORK_DIR . '/Writable/logs';
     if (!is_dir($logDir)) {
         @mkdir($logDir, 0755, true);
     }
@@ -52,7 +58,7 @@ function logException($e)
     $logFile = $logDir . '/error_' . date('Y-m-d') . '.log';
 
     $logContent = sprintf(
-        "[%s] %s: %s in %s on line %d\nStack trace:\n%s\n\n",
+        "[%s] %s: %s in %s on line %d\nStack trace:\n%s\n",
         date('Y-m-d H:i:s'),
         get_class($e),
         $e->getMessage(),
@@ -65,7 +71,7 @@ function logException($e)
     $logContent .= "Request URI: " . ($_SERVER['REQUEST_URI'] ?? '') . "\n";
     $logContent .= "Request Method: " . ($_SERVER['REQUEST_METHOD'] ?? '') . "\n";
     $logContent .= "IP Address: " . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n";
-    $logContent .= "User Agent: " . ($_SERVER['HTTP_USER_AGENT'] ?? '') . "\n\n";
+    $logContent .= "User Agent: " . ($_SERVER['HTTP_USER_AGENT'] ?? '') . "\n";
 
     @file_put_contents($logFile, $logContent, FILE_APPEND);
 }

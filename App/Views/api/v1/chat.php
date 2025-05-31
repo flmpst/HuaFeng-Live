@@ -18,22 +18,26 @@ $method = isset(explode('/', trim($uri, '/'))[3]) ? explode('/', trim($uri, '/')
 if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
     $message = htmlspecialchars(trim($_POST['message'] ?? ''), ENT_QUOTES, 'UTF-8');
     $userInfo = $userHelpers->getUserInfoByEnv();
-    $rooId = isset($_GET['room_id']) ? (int)$_GET['room_id'] : 0;
+    $roomId = isset($_GET['room_id']) ? (int)$_GET['room_id'] : 0;
     $live = new Live;
-    if ($live->get($rooId)) {
+    if ($live->get($roomId)) {
         switch ($method) {
             case 'send':
                 if (empty($userInfo)) {
                     $helpers->jsonResponse(401, '未登录');
                 }
-                // 检查是否有消息或发送
                 if (empty($message)) {
                     $helpers->jsonResponse(406, '消息内容不能为空');
-                    return;
                 }
 
-                // 调用Chat处理消息发送
-                if ($Chat->sendMessage($userInfo, $message, $rooId)) {
+                $danmakuParams = null;
+                $danmakuParams = [
+                    'color' => $_POST['color'] ?? '#FFFFFF',
+                    'type' => $_POST['type'] ?? 'right',
+                    'size' => $_POST['size'] ?? 25,
+                ];
+
+                if ($Chat->sendMessage($userInfo, $message, $roomId, $danmakuParams)) {
                     $helpers->jsonResponse(200, Chat::MESSAGE_SUCCESS);
                 } else {
                     $helpers->jsonResponse(406, Chat::MESSAGE_SEND_FAILED);
@@ -43,7 +47,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
                 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 
-                $result = $Chat->getMessages($rooId, $offset, $limit);
+                $result = $Chat->getMessages($roomId, $offset, $limit);
                 if (!$result) {
                     $helpers->jsonResponse(406, Chat::MESSAGE_FETCH_FAILED);
                 } else {
@@ -51,7 +55,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 }
                 break;
             case 'count':
-                $result = $Chat->getMessageCount($rooId);
+                $result = $Chat->getMessageCount($roomId);
                 if (!$result) {
                     $helpers->jsonResponse(406, '获取消息总数失败');
                 } else {

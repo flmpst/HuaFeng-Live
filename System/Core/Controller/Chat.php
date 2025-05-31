@@ -36,17 +36,17 @@ class Chat
      *
      * @param array $user 用户信息数组
      * @param string $message 发送的消息内容
-     * @param bool $roomId 直播间ID
+     * @param int $roomId 直播间ID
      * @return bool
      */
-    public function sendMessage($user, $message, $roomId): bool
+    public function sendMessage(array $user, string $message, int $roomId, array $danmaku): bool
     {
         try {
             if ($this->live->get($roomId)) {
                 $userIP = new User;
                 $db = Base::getInstance()->getConnection();
-                $stmt = $db->prepare('INSERT INTO messages (user_id, content, room_id, created_at, user_ip) VALUES (?, ?, ?, ?, ?)');
-                return $stmt->execute([$user['user_id'], $message, $roomId, date('Y-m-d H:i:s'), $userIP->getIp()]);
+                $stmt = $db->prepare('INSERT INTO messages (user_id, content, room_id, created_at, user_ip, danmaku) VALUES (?, ?, ?, ?, ?, ?)');
+                return $stmt->execute([$user['user_id'], $message, $roomId, date('Y-m-d H:i:s'), $userIP->getIp(), serialize($danmaku)]);
             }
             return false;
         } catch (PDOException $e) {
@@ -143,39 +143,50 @@ class Chat
      * @param int $roomId 直播间ID
      * @return array
      */
-    public function getMessages(int $roomId, $offset = 0, $limit = 10): array
+    public function getMessages(int $roomId, int $offset = 0, int $limit = 10,): array
     {
         try {
             $db = Base::getInstance()->getConnection();
+
+            // 构建查询
             $query = 'SELECT
-                        messages.id,
-                        messages.type,
-                        messages.content,
-                        messages.created_at,
-                        messages.status,
-                        users.username,
-                        users.email
-                    FROM messages
-                    LEFT JOIN users ON messages.user_id = users.user_id
-                    WHERE messages.room_id = :roomId
-                    AND messages.status = "active"
-                    ORDER BY messages.created_at ASC
-                    LIMIT :limit OFFSET :offset';
+                    messages.id,
+                    messages.type,
+                    messages.content,
+                    messages.created_at,
+                    messages.status,
+                    messages.danmaku,
+                    users.username,
+                    users.email
+                FROM messages
+                LEFT JOIN users ON messages.user_id = users.user_id
+                WHERE messages.room_id = :roomId
+                AND messages.status = "active"
+                ORDER BY messages.created_at ASC
+                LIMIT :limit OFFSET :offset';
 
             $stmt = $db->prepare($query);
             $stmt->bindValue(':roomId', (int)$roomId, PDO::PARAM_INT);
             $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
             $stmt->execute();
             $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $this->updataOnlineUsers($roomId);
 
-            // 遍历每条消息，替换 email 为头像 URL
+            // 处理每条消息
             foreach ($messages as &$message) {
                 $avatarUrl = $this->userHelpers->getAvatar($message['email'], 25);
                 $message['avatar'] = $avatarUrl;
                 unset($message['email']);
+
+                // 解析弹幕数据
+                if ($message['danmaku']) {
+                    $message['danmaku'] = unserialize($message['danmaku']);
+                } else {
+                    $message['danmaku'] = null;
+                }
             }
 
             return [
@@ -214,7 +225,7 @@ class Chat
      * 
      * @return array 在线用户数据
      */
-    public function getOnlineUsers($roomId): array
+    public function getOnlineUsers(int $roomId): array
     {
         // 确保直播间存在
         if ($this->live->get($roomId)) {
@@ -236,7 +247,7 @@ class Chat
      *
      * @return int|false
      */
-    private function updataOnlineUsers($roomId): int|false
+    private function updataOnlineUsers(int $roomId): int|false
     {
         try {
             // 确保直播间存在

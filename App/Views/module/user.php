@@ -243,6 +243,7 @@ if ($userHelpers->checkUserLoginStatus()) {
         <div class="mdui-dialog-title mdui-color-grey-800">
             创建直播 <span id="add-live-msg" class="mdui-color-red"></span>
         </div>
+        <div id="livepic-upload-progress"></div>
         <form class="mdui-dialog-content" id="add-live-form" enctype="multipart/form-data">
             <div class="mdui-textfield mdui-textfield-floating-label">
                 <label class="mdui-textfield-label mdui-text-color-white">直播间名称</label>
@@ -254,7 +255,11 @@ if ($userHelpers->checkUserLoginStatus()) {
             </div>
             <div class="mdui-textfield">
                 <label class="mdui-textfield-label mdui-text-color-white">*封面图片上传（建议1280*720）</label>
-                <input class="mdui-textfield-input mdui-text-color-white" name="pic" type="file" accept="image/*" />
+                <input class="mdui-textfield-input mdui-text-color-white"
+                    name="pic"
+                    type="file"
+                    accept="image/*"
+                    id="coverImageInput" />
             </div>
             <div class="mdui-textfield mdui-textfield-floating-label">
                 <label class="mdui-textfield-label mdui-text-color-white">直播源（推荐ipv4地址）</label>

@@ -154,7 +154,6 @@ if (!$liveData) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
     <link href="https://cdn.bootcdn.net/ajax/libs/mdui/1.0.2/css/mdui.min.css" rel="stylesheet">
     <link href="https://cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="/StaticResources/css/live.css?<?= FRAMEWORK_VERSION ?>">
     <link rel="stylesheet" href="/StaticResources/css/common.css?<?= FRAMEWORK_VERSION ?>">
     <title><?= htmlspecialchars($liveData['name'] ?? 'DFGG LIVE') ?> - DFGG LIVE</title>
@@ -180,7 +179,7 @@ if (!$liveData) {
             $currentUser = $userHelpers->getUserInfoByEnv() ?? [];
             $isAdmin = isset($currentUser['group_id']) && $currentUser['group_id'] === 1;
             $isOwner = isset($currentUser['user_id'], $liveData['user_id']) && $liveData['user_id'] === $currentUser['user_id'];
-            
+
             if ($isAdmin || $isOwner) {
                 // 安全获取直播数据，设置默认值
                 $liveName = htmlspecialchars($liveData['name'] ?? '');
@@ -235,19 +234,17 @@ if (!$liveData) {
 
     <div id="container">
         <div id="video-container">
-            <video id="videoElement" controls></video>
+            <div id="videoElement" controls></div>
             <div id="error-msg"></div>
-        </div>
-        <div id="danmaku-container">
             <div id="liveInfo">
-                主播: 
+                主播:
                 <?php
                 // 安全获取主播信息
                 $broadcasterInfo = $userHelpers->getUserInfo(null, $liveData['user_id'] ?? null) ?? [];
                 $broadcasterAvatar = $userHelpers->getAvatar($broadcasterInfo['email'] ?? '', 25);
                 $broadcasterName = htmlspecialchars($broadcasterInfo['username'] ?? '未知用户');
                 $liveDescription = htmlspecialchars($liveData['description'] ?? '');
-                
+
                 if (!empty($broadcasterAvatar)) {
                     echo '<img src="' . htmlspecialchars($broadcasterAvatar) . '" alt="主播头像">';
                 }
@@ -255,36 +252,15 @@ if (!$liveData) {
                 ?>
             </div>
         </div>
-    </div>
-
-    <div id="danmaku-input-container" class="mdui-textfield">
-        <?php
-        if ($userHelpers->checkUserLoginStatus()) {
-        ?>
-            <input class="mdui-textfield-input mdui-text-color-white-text" type="text" id="danmaku-input" placeholder="输入弹幕内容">
-            <button id="sendDanmakuBtn" class="mdui-btn mdui-btn-raised">发送</button>
-        <?php
-        } else {
-        ?>
-            <span style="font-style: italic;">返回首页登录即可互动</span>
-        <?php
-        }
-        ?>
+        <div id="danmaku-container"></div>
     </div>
 
     <script src="/StaticResources/js/mdui.min.js"></script>
     <script src="/StaticResources/js/jquery.min.js"></script>
-    <script src="/StaticResources/js/plyr.js"></script>
+    <script src="/StaticResources/js/DPlayer.min.js"></script>
     <script src="/StaticResources/js/flv.min.js"></script>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/hls.js/8.0.0-beta.3/hls.min.js" type="application/javascript"></script>
     <script src="/StaticResources/js/live.js?<?= FRAMEWORK_VERSION ?>"></script>
-    <script>
-        const liveData = {
-            videoSource: "<?= htmlspecialchars($liveData['video_source'] ?? '') ?>",
-            videoSourceType: "<?= htmlspecialchars($liveData['video_source_type'] ?? '') ?>"
-        };
-        initializePlayer(liveData)
-    </script>
 </body>
 
 </html>

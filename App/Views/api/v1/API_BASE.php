@@ -44,7 +44,5 @@ if (!preg_match('/^[a-zA-Z0-9_]+$/', $apiName)) {
         $getTrace = [];
     }
 
-    $errorMessage = $e->getMessage();
-    $statusCode = 500;
-    $helpers->jsonResponse($statusCode, $errorMessage, $getTrace);
+    handleException($e);
 }

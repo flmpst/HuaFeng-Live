@@ -227,6 +227,11 @@ class User
      */
     public function getAvatar($email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array())
     {
+        // 如果users表中avatar字段中没有则通过cravatar.com获取头像
+        $userInfo = $this->getUserInfo(null, null, $email);
+        if ($userInfo && isset($userInfo['avatar']) && !empty($userInfo['avatar'])) {
+            return $userInfo['avatar'];
+        }
         $url = 'https://cravatar.com/avatar/';
         $url .= md5(strtolower(trim($email)));
         $url .= "?s=$s&d=$d&r=$r";

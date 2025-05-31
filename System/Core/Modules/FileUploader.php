@@ -19,33 +19,30 @@ class FileUploader
     }
 
     /**
-     * 上传文件并返回相对路径
+     * 上传文件并返回相对路径及更多信息
      *
      * @param array $file $_FILES数组
      * @param int $userId 用户ID
-     * @return array 返回包含成功状态和路径的数组
+     * @return array 返回包含成功状态、路径、文件名、大小、类型等信息的数组
      * @throws Exception 如果上传失败抛出异常
      */
     public function upload(array $file, int $userId)
     {
         try {
-            // 检查上传错误
             if ($file['error'] !== UPLOAD_ERR_OK) {
                 throw new Exception($this->getUploadErrorMessage($file['error']));
             }
 
-            // 验证文件类型
             $fileType = mime_content_type($file['tmp_name']);
             if (!in_array($fileType, $this->allowedTypes)) {
                 throw new Exception('不允许的文件类型: ' . $fileType);
             }
 
-            // 验证文件大小
             if ($file['size'] > $this->maxSize) {
                 throw new Exception('文件大小超过限制');
             }
 
-            // 创建上传目录
+            // uploads/Y/m/d/u_userId/
             $relativePath = date('Y/m/d') . "/u_$userId/";
             $absolutePath = $this->uploadDir . $relativePath;
 
@@ -55,19 +52,26 @@ class FileUploader
                 }
             }
 
-            // 生成唯一文件名
+            // md5(uniqid() . $userId . time()) + 文件扩展名
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $filename = md5(uniqid() . $userId . time()) . '.' . $extension;
             $relativeFilePath = $relativePath . $filename;
             $absoluteFilePath = $absolutePath . $filename;
 
-            // 移动上传的文件
             if (!move_uploaded_file($file['tmp_name'], $absoluteFilePath)) {
                 throw new Exception('无法移动上传的文件');
             }
 
-            // 返回相对路径
-            return '/StaticResources/uploads/' . $relativeFilePath;
+            // 返回
+            return [
+                'path'       => '/StaticResources/uploads/' . $relativeFilePath,
+                'filename'   => $filename,
+                'original'   => $file['name'],
+                'size'       => $file['size'],
+                'type'       => $fileType,
+                'extension'  => $extension,
+                'uploadTime' => date('Y-m-d H:i:s'),
+            ];
         } catch (Throwable $e) {
             throw new Exception('文件上传失败: ' . $e->getMessage());
         }

@@ -27,6 +27,7 @@ body {
 }
 
 #video-container {
+    overflow: hidden;
     flex: 1;
     position: relative;
 }
@@ -44,6 +45,11 @@ body {
 .error-msg {
     text-align: center;
     padding: 20px;
+}
+
+#liveInfo {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px;
 }
 
 #danmaku-container {
@@ -69,19 +75,26 @@ body {
     line-height: 1.5;
 }
 
-/* 弹幕输入框和按钮样式 */
-#danmaku-input-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 10px;
-    padding-bottom: unset;
+/* 弹幕元素样式 */
+.danmaku-item {
+    position: absolute;
+    white-space: nowrap;
+    font-size: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    z-index: 10;
 }
 
-#danmaku-input {
-    flex: 1;
-    padding: 5px;
-    margin-right: 10px;
+.danmaku-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.danmaku-text {
+    vertical-align: middle;
 }
 
 #footer {
@@ -104,7 +117,6 @@ body {
     }
 
     #danmaku-container {
-        height: auto;
         flex-grow: 1;
     }
 }
@@ -120,18 +132,13 @@ body {
     }
 
     #videoElement {
-        height: calc(100vh - 70px);
+        height: calc(100vh - 110px);
     }
 
     #danmaku-container {
-        width: 30%;
+        width: 20%;
         height: 100%;
         overflow-y: auto;
         margin-left: 10px;
-    }
-
-    #danmaku-input-container {
-        width: 30%;
-        float: inline-end;
     }
 }

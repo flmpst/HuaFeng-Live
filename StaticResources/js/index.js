@@ -27,6 +27,10 @@ $(document).ready(function () {
         listContainer.append(cards);
     }
 
+    function resetButton(btn) {
+        btn.prop('disabled', false).html('创建');
+    }
+
     $.ajax({
         url: '/api/v1/live/list',
         method: 'GET',
@@ -96,24 +100,21 @@ $(document).ready(function () {
         });
     });
 
-    $('#add-live-btn').on('click', function () {
-        const $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="mdui-icon material-icons">hourglass_empty</i> 创建中...');
+    $('#add-live-btn').on('click', async function () {
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="mdui-icon material-icons">hourglass_empty</i> 创建中...');
+        $('#add-live-msg').text('').removeClass('mdui-text-color-green');
 
-        // 获取表单数据
-        const form = document.getElementById('add-live-form');
-        const formData = new FormData(form);
-
-        // 手动添加其他字段（如果需要）
+        // 1. 获取表单数据
         const name = $("input[name='name']").val().trim();
         const videoSource = $("input[name='videoSource']").val().trim();
         const videoSourceType = $("input[name='videoSourceType']").val().trim();
+        const coverImageInput = document.getElementById('coverImageInput');
 
-        // 验证输入
+        // 2. 验证输入
         if (!name) {
             $('#add-live-msg').text('直播间名称不能为空');
-            $btn.prop('disabled', false).html('创建');
-            return;
+            return resetButton(btn);
         }
 
         if (videoSource) {
@@ -121,8 +122,7 @@ $(document).ready(function () {
                 const urlPattern = /^(https?:\/\/)?([^\s/?.#]+\.?)+(:\d+)?([/?][^\s]*)?$/i;
                 if (!urlPattern.test(videoSource)) {
                     $('#add-live-msg').text('直播源URL无效');
-                    $btn.prop('disabled', false).html('创建');
-                    return;
+                    return resetButton(btn);
                 }
             } catch (error) {
                 console.error("URL验证错误:", error);
@@ -131,36 +131,71 @@ $(document).ready(function () {
 
         if (videoSource && !videoSourceType) {
             $('#add-live-msg').text('直播源类型不能为空');
-            $btn.prop('disabled', false).html('创建');
-            return;
+            return resetButton(btn);
         }
 
-        // 发送请求
-        $.ajax({
-            type: "POST",
-            url: "/api/v1/live/create",
-            data: formData,
-            processData: false,  // 重要：告诉jQuery不要处理数据
-            contentType: false,  // 重要：告诉jQuery不要设置Content-Type
-            dataType: "json",
-            success: function (response) {
-                if (response.code === 200) {
-                    $('#add-live-msg').text('创建成功').removeClass('mdui-text-color-red').addClass('mdui-text-color-green');
-                    setTimeout(() => location.href = response.data.id || '/', 1000);
-                } else {
-                    $('#add-live-msg').text(`创建失败：${response.message || '未知错误'}`);
-                    $btn.prop('disabled', false).html('创建');
+        try {
+            // 准备完整表单数据
+            const formData = new FormData(document.getElementById('add-live-form'));
+
+            if (coverImageInput.files.length) {
+                const uploadFormData = new FormData();
+                const progressContainer = $('<div class="mdui-progress"></div>');
+                const progressBar = $('<div class="mdui-progress-determinate"></div>');
+                progressContainer.append(progressBar);
+                $('#livepic-upload-progress').html(progressContainer);
+                uploadFormData.append('file', coverImageInput.files[0]);
+
+                const uploadResponse = await $.ajax({
+                    url: '/api/v1/files/upload',
+                    type: 'POST',
+                    data: uploadFormData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function () {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function (evt) {
+                            if (evt.lengthComputable) {
+                                const percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                                progressBar.css('width', percentComplete + '%');
+                                btn.html(`<i class="mdui-icon material-icons">cloud_upload</i> 上传中 ${percentComplete}%`);
+                            }
+                        }, false);
+                        return xhr;
+                    }
+                });
+
+                if (uploadResponse.code !== 200) {
+                    throw new Error(uploadResponse.message || '封面图片上传失败');
                 }
-            },
-            error: function (xhr) {
-                let errorMsg = `创建失败：${xhr.status}`;
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMsg += ` - ${xhr.responseJSON.message}`;
-                }
-                $('#add-live-msg').text(errorMsg);
-                $btn.prop('disabled', false).html('创建');
+                formData.set('pic', `https://live.dfggmc.top/${uploadResponse.data.path}`); // 替换为服务器返回的路径
             }
-        });
+
+            btn.html('<i class="mdui-icon material-icons">hourglass_empty</i> 创建中...');
+
+            // 提交创建直播请求
+            const createResponse = await $.ajax({
+                url: '/api/v1/live/create',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false
+            });
+
+            if (createResponse.code === 200) {
+                $('#add-live-msg').text('创建成功').removeClass('mdui-text-color-red').addClass('mdui-text-color-green');
+                setTimeout(() => location.href = createResponse.data.id || '/', 1000);
+            } else {
+                throw new Error(createResponse.message || '创建失败');
+            }
+        } catch (error) {
+            $('#add-live-msg').text(error.message || '请求失败');
+            resetButton(btn);
+            console.error(error);
+        } finally {
+            // 无论成功或失败都移除进度条
+            $('.mdui-progress').remove();
+        }
     });
 
     $(document).ready(function () {
