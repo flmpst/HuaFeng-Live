@@ -250,7 +250,7 @@ if (!$liveData) {
                 $liveDescription = htmlspecialchars($liveData['description'] ?? '');
 
                 if (!empty($broadcasterAvatar)) {
-                    echo '<img src="' . ($broadcasterAvatar) . '" alt="主播头像">';
+                    echo '<img style="width: 50px;border-radius: 5px;" src="' . ($broadcasterAvatar) . '" alt="主播头像">';
                 }
                 echo $broadcasterName . ' - ' . $liveDescription;
                 ?>
