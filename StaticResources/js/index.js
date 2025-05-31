@@ -58,8 +58,91 @@ $(document).ready(function () {
         }
     });
 
+    // 鼠标悬停效果
+    $('.avatar-container').hover(
+        function () {
+            $(this).find('.upload-overlay').show();
+        },
+        function () {
+            $(this).find('.upload-overlay').hide();
+        }
+    );
+
+    // 点击头像触发文件选择
+    $('.avatar-container').on('click', function () {
+        document.getElementById('avatar-upload').click();
+    });
+
+    // 文件选择后上传
+    $('#avatar-upload').on('change', function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+
+        // 验证文件类型
+        if (!file.type.match('image.*')) {
+            $('#user-panel-msg').html('<span class="mdui-color-red-a700">请选择图片文件</span>');
+            return;
+        }
+
+        // 创建表单数据
+        var formData = new FormData();
+        formData.append('file', file);
+
+        // 显示上传中状态
+        $('#user-panel-msg').html('<span class="mdui-color-blue">正在上传头像...</span>');
+
+        // 发送AJAX请求
+        $.ajax({
+            url: '/api/v1/files/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.code === 200) {
+                    response = response.data
+                    // 更新隐藏字段
+                    $('#avatar-path').val(response.path);
+
+                    // 更新头像预览
+                    var imgElement = $('.avatar-container img');
+                    if (imgElement.length) {
+                        imgElement.attr('src', response.path + '?t=' + Date.now());
+                    }
+
+                    $('#user-panel-msg').html('<span class="mdui-color-green">头像上传成功</span>');
+                } else {
+                    $('#user-panel-msg').html('<span class="mdui-color-red-a700">头像上传失败</span>');
+                }
+            },
+            error: function () {
+                $('#user-panel-msg').html('<span class="mdui-color-red-a700">网络错误，请重试</span>');
+            }
+        });
+    });    
+
+    // 表单提交功能
     $('#user-panel-btn').on('click', function () {
+        // 验证表单
+        var newPassword = $('input[name="newPassword"]').val();
+        var confirmPassword = $('input[name="confirmPassword"]').val();
+
+        if (newPassword || confirmPassword) {
+            if (newPassword !== confirmPassword) {
+                $('#user-panel-msg').html('<span class="mdui-color-red-a700">两次输入的新密码不一致</span>');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                $('#user-panel-msg').html('<span class="mdui-color-red-a700">新密码长度至少需要6个字符</span>');
+                return;
+            }
+        }
+
+        // 禁用按钮防止重复提交
         $(this).prop('disabled', true);
+
+        // 发送表单数据
         $.ajax({
             type: "POST",
             url: "/api/v1/user/update",

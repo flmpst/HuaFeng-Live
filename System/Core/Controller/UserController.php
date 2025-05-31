@@ -36,13 +36,35 @@ class UserController
         $this->tokenManager = new TokenManager;
     }
 
-    public function auth($email, $password)
+    /**
+     * 用户认证方法
+     * 如果用户已存在则登录，否则注册新用户
+     *
+     * @param string $email 用户邮箱
+     * @param string $password 用户密码
+     */
+    public function auth(string $email, string $password)
     {
         if ($this->userHelpers->getUserInfo(null, null, $email, false) !== []) {
             $this->login($email, $password);
         } else {
             $this->register($email, $password);
         }
+    }
+
+    /**
+     * 验证用户密码
+     *
+     * @param int $userId 用户ID
+     * @param string $password 明文密码
+     * @return array|null 返回用户信息数组或null
+     */
+    public function verifyPassword(int $userId, string $password)
+    {
+        $user = $this->userHelpers->getUserInfo(null, $userId);
+        if (!$user) return false;
+
+        return password_verify($password, $user['password']);
     }
 
     /**

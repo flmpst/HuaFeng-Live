@@ -6,6 +6,10 @@ body {
     color: #fff;
 }
 
+.avatar {
+    height: 40px;
+}
+
 /* 顶部导航栏样式 */
 #navbar {
     background-color: #333;
@@ -58,7 +62,6 @@ body {
     overflow-y: auto;
     padding: 10px;
     box-sizing: border-box;
-    height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -98,12 +101,27 @@ body {
 }
 
 #footer {
-    position: fixed;
-    bottom: 0px;
-    width: auto;
-    text-align: center;
+    background-color: #222;
     color: #bbb;
-    font-size: 12px;
+    font-size: 14px;
+    text-align: center;
+    display: flex;
+}
+
+#footer a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+#footer a:hover {
+    color: #ffcc00;
+}
+
+#footer p {
+    margin: 5px 0;
+    width: 100%;
 }
 
 /* 手机端竖屏 */
@@ -118,6 +136,7 @@ body {
 
     #danmaku-container {
         flex-grow: 1;
+        max-height: 60%;
     }
 }
 

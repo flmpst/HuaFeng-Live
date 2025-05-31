@@ -40,8 +40,8 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             break;
         case 'clientAuth':
             // 验证clientid
-            $clientid = $_GET['clientid'];
-            $method = $_GET['method'];
+            $clientid = $_GET['clientid'] ?? '';
+            $method = $_GET['method'] ?? '';
 
             // 前端确认第三方客户端
             // 生成一个临时的token，过期时间为1小时
@@ -67,11 +67,32 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             if (empty($userData) || !isset($userData['user_id'])) {
                 $helpers->jsonResponse(401, '未登录');
             }
-            $update = $userController->updateUser($userData['user_id'], ['username' => htmlspecialchars($_POST['username'])]);
+
+            $updateData = ['username' => htmlspecialchars($_POST['username'])];
+
+            // 处理头像更新
+            if (!empty($_POST['avatar_path'])) {
+                $updateData['avatar'] = htmlspecialchars($_POST['avatar_path']);
+            }
+
+            // 处理密码更新
+            if (!empty($_POST['password']) && !empty($_POST['newPassword'])) {
+                // 验证当前密码是否正确
+                $isValid = $userController->verifyPassword($userData['user_id'], $_POST['password']);
+                if (!$isValid) {
+                    $helpers->jsonResponse(401, '当前密码不正确');
+                }
+
+                // 更新密码
+                $passwordHash = password_hash($_POST['newPassword'], PASSWORD_DEFAULT);
+                $updateData['password'] = $passwordHash;
+            }
+
+            $update = $userController->updateUser($userData['user_id'], $updateData);
             if ($update) {
-                $helpers->jsonResponse(200, true);
+                $helpers->jsonResponse(200, '更新成功');
             } else {
-                $helpers->jsonResponse(406, $update);
+                $helpers->jsonResponse(406, '更新失败');
             }
             break;
         case 'logout':

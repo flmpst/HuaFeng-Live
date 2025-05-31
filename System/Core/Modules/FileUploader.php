@@ -52,9 +52,10 @@ class FileUploader
                 }
             }
 
-            // md5(uniqid() . $userId . time()) + 文件扩展名
+            // 使用文件内容的md5作为文件名
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $filename = md5(uniqid() . $userId . time()) . '.' . $extension;
+            $fileMd5 = md5_file($file['tmp_name']);
+            $filename = $fileMd5 . '.' . $extension;
             $relativeFilePath = $relativePath . $filename;
             $absoluteFilePath = $absolutePath . $filename;
 
@@ -70,6 +71,7 @@ class FileUploader
                 'size'       => $file['size'],
                 'type'       => $fileType,
                 'extension'  => $extension,
+                'md5'        => $fileMd5,
                 'uploadTime' => date('Y-m-d H:i:s'),
             ];
         } catch (Throwable $e) {

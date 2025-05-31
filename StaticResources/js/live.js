@@ -248,7 +248,7 @@ function displayMessage(msg) {
 }
 
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
     $('#edit-live-btn').on('click', function () {
         $(this).prop('disabled', true);
 

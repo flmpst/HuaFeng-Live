@@ -220,26 +220,30 @@ class User
      * @param string $s 的像素大小，默认为80px [1 - 2048]
      * @param string $d 默认图像集使用[404 | mp | identicon | monsterid | wavatar]
      * @param string $r 最大评级（包括）[g | pg | r | x]
-     * @param boole $img True仅为URL返回完整的img标签False
+     * @param boole $img True仅为URL，返回完整的img标签False
      * @param array $atts 可选，IMG标签中包含的额外的键值对属性
      * @return string URL或img标签
      * @来源https://cravatar.com/developer/php-image-requests
      */
-    public function getAvatar($email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array())
+    public function getAvatar($email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = null)
     {
+        $HtmlBuilder = new HtmlBuilder();
         // 如果users表中avatar字段中没有则通过cravatar.com获取头像
         $userInfo = $this->getUserInfo(null, null, $email);
         if ($userInfo && isset($userInfo['avatar']) && !empty($userInfo['avatar'])) {
-            return $userInfo['avatar'];
+            if ($img) {
+                return $HtmlBuilder->image($userInfo['avatar'], $email, $atts)
+                    ->getHtml();
+            } else {
+                return $userInfo['avatar'];
+            }
         }
         $url = 'https://cravatar.com/avatar/';
         $url .= md5(strtolower(trim($email)));
         $url .= "?s=$s&d=$d&r=$r";
         if ($img) {
-            $url = '<img src="' . $url . '"';
-            foreach ($atts as $key => $val)
-                $url .= ' ' . $key . '="' . $val . '"';
-            $url .= ' />';
+            $url = $HtmlBuilder->image($url, $email, $atts)
+                ->getHtml();
         }
         return $url;
     }

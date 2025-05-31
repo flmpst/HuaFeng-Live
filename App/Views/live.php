@@ -174,6 +174,8 @@ if (!$liveData) {
             </h1>
             <div class="mdui-toolbar-spacer"></div>
             <a class="mdui-typo" href="/">返回首页</a>
+            <!-- 添加分享按钮 -->
+            <button class="mdui-btn mdui-ripple mdui-btn-icon" id="share-button"><i class="mdui-icon material-icons">share</i></button>
             <?php
             // 安全获取用户信息
             $currentUser = $userHelpers->getUserInfoByEnv() ?? [];
@@ -236,6 +238,8 @@ if (!$liveData) {
         <div id="video-container">
             <div id="videoElement" controls></div>
             <div id="error-msg"></div>
+        </div>
+        <div id="danmaku-container">
             <div id="liveInfo">
                 主播:
                 <?php
@@ -246,14 +250,20 @@ if (!$liveData) {
                 $liveDescription = htmlspecialchars($liveData['description'] ?? '');
 
                 if (!empty($broadcasterAvatar)) {
-                    echo '<img src="' . htmlspecialchars($broadcasterAvatar) . '" alt="主播头像">';
+                    echo '<img src="' . ($broadcasterAvatar) . '" alt="主播头像">';
                 }
                 echo $broadcasterName . ' - ' . $liveDescription;
                 ?>
             </div>
         </div>
-        <div id="danmaku-container"></div>
     </div>
+
+    <footer id="footer" class="mdui-typo">
+        <p>
+            <a href="https://github.com/flmpst/HuaFeng-Live" target="_blank" rel="noopener noreferrer"><i class="mdui-icon material-icons">code</i>此项目是开源的点我进入</a>
+            <a href="http://live.dfggmc.top" target="_blank" rel="noopener noreferrer"><i class="mdui-icon material-icons">link</i>花枫Live By https://flmp.uk/</a>
+        </p>
+    </footer>
 
     <script src="/StaticResources/js/mdui.min.js"></script>
     <script src="/StaticResources/js/jquery.min.js"></script>
@@ -261,6 +271,28 @@ if (!$liveData) {
     <script src="/StaticResources/js/flv.min.js"></script>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/hls.js/8.0.0-beta.3/hls.min.js" type="application/javascript"></script>
     <script src="/StaticResources/js/live.js?<?= FRAMEWORK_VERSION ?>"></script>
+    <script>
+        document.getElementById('share-button').addEventListener('click', function() {
+            const currentUrl = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                        title: '<?= htmlspecialchars($liveData['name'] ?? 'DFGG LIVE') ?>',
+                        text: '<?= htmlspecialchars($liveData['description'] ?? '') ?>',
+                        url: currentUrl
+                    })
+                    .then(() => console.debug('分享成功'))
+                    .catch((error) => console.error('分享失败:', error));
+            } else {
+                const tempInput = document.createElement('input');
+                tempInput.value = currentUrl;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('已复制链接到剪贴板');
+            }
+        });
+    </script>
 </body>
 
 </html>

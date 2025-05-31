@@ -31,7 +31,7 @@ $userHelpers = new User;
             if ($userHelpers->checkUserLoginStatus()) {
             ?>
                 <button class="mdui-btn mdui-ripple" mdui-dialog-close mdui-dialog="{target: '#add-live'}">创建直播</button>
-                <button class="mdui-btn mdui-ripple" mdui-dialog="{target: '#user-panel'}"><?= $userHelpers->getAvatar($userHelpers->getUserInfoByEnv()['email'], 35, 'mp', 'g', true) ?></button>
+                <button class="mdui-btn mdui-ripple" mdui-dialog="{target: '#user-panel'}"><?= $userHelpers->getAvatar($userHelpers->getUserInfoByEnv()['email'], 35, 'mp', 'g', true, ['style' => 'height:40px;']) ?></button>
             <?php
             } else {
             ?>
@@ -57,9 +57,13 @@ $userHelpers = new User;
         </button>
     </div>
 
-    <div id="copy">
-        V<?= FRAMEWORK_VERSION ?>
-    </div>
+    <footer id="footer" class="mdui-typo">
+        <p>
+            <a href="https://github.com/flmpst/HuaFeng-Live" target="_blank" rel="noopener noreferrer"><i class="mdui-icon material-icons">code</i>此项目是开源的点我进入</a>
+            <a href="http://live.dfggmc.top" target="_blank" rel="noopener noreferrer"><i class="mdui-icon material-icons">link</i>花枫Live By https://flmp.uk/</a>
+            V<?= FRAMEWORK_VERSION ?>
+        </p>
+    </footer>
 
     <script src="/StaticResources/js/mdui.min.js"></script>
     <script src="/StaticResources/js/jquery.min.js"></script>

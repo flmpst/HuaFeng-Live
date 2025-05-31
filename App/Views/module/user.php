@@ -85,25 +85,45 @@ if (!$userHelpers->checkUserLoginStatus()) {
 if ($userHelpers->checkUserLoginStatus()) {
 ?>
     <div class="mdui-dialog custom-dialog" id="user-panel">
-        <div class="mdui-dialog-title mdui-color-grey-800" style="justify-items: center;">
-            <?= $userHelpers->getAvatar($userHelpers->getUserInfoByEnv()['email'], 80, 'mp', 'g', true) ?>
-            <p>
-                个人设置面板(留空为不更改 | 更改密码尚未实现)
-            </p>
-            <span id="user-panel-msg"></span>
+        <!-- 对话框标题区域 -->
+        <div class="mdui-dialog-title mdui-color-grey-800 mdui-text-center">
+            <!-- 头像上传区域 -->
+            <div class="avatar-container mdui-center" style="width: 100px; height: 100px; position: relative; cursor: pointer;">
+                <?= $userHelpers->getAvatar($userHelpers->getUserInfoByEnv()['email'], 100, 'mp', 'g', true, [
+                    'style' => 'width: 100%; height: 100%; object-fit: cover; border-radius: 50%;',
+                    'id' => 'user-avatar'
+                ]) ?>
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                <div class="upload-overlay mdui-valign"
+                    style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                        background: rgba(0,0,0,0.5); color: white; border-radius: 50%;">
+                    <div class="mdui-text-center" style="width: 100%;">
+                        <i class="mdui-icon material-icons">photo_camera</i>
+                        <div>更换头像</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="mdui-m-t-2"><?= $userHelpers->getUserInfoByEnv()['username'] ?>的个人设置面板 | 留空则不更改</h3>
+            <div id="user-panel-msg" class="mdui-m-t-1"></div>
         </div>
         <form class="mdui-dialog-content" id="user-form">
+            <input type="hidden" id="avatar-path" name="avatar_path">
             <div class="mdui-textfield mdui-textfield-floating-label mdui-text-color-white">
                 <label class="mdui-textfield-label mdui-text-color-white">用户名</label>
                 <input class="mdui-textfield-input mdui-text-color-white" autocomplete="username" name="username" type="text" value="<?= $userHelpers->getUserInfoByEnv()['username'] ?>" />
             </div>
             <div class="mdui-textfield mdui-textfield-floating-label">
-                <label class="mdui-textfield-label mdui-text-color-white">旧密码</label>
+                <label class="mdui-textfield-label mdui-text-color-white">当前密码</label>
                 <input class="mdui-textfield-input mdui-text-color-white" autocomplete="current-password" name="password" type="password" />
             </div>
             <div class="mdui-textfield mdui-textfield-floating-label">
                 <label class="mdui-textfield-label mdui-text-color-white">新密码</label>
                 <input class="mdui-textfield-input mdui-text-color-white" autocomplete="new-password" name="newPassword" type="password" />
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label mdui-text-color-white">确认新密码</label>
+                <input class="mdui-textfield-input mdui-text-color-white" autocomplete="new-password" name="confirmPassword" type="password" />
             </div>
         </form>
         <div class="mdui-dialog-actions">
