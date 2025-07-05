@@ -16,7 +16,7 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 20;
 
             $params = [
-                'username' => $_GET['username'] ?? '',
+                'username' => h($_GET['username'] ?? ''),
                 'status' => isset($_GET['status']) ? (int)$_GET['status'] : null,
                 'group_id' => isset($_GET['group_id']) ? (int)$_GET['group_id'] : null
             ];
@@ -29,18 +29,18 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 20;
 
             $params = [
-                'name' => $_GET['name'] ?? '',
-                'description' => $_GET['description'] ?? '',
+                'name' => h($_GET['name'] ?? ''),
+                'description' => h($_GET['description'] ?? ''),
                 'user_id' => isset($_GET['user_id']) ? (int)$_GET['user_id'] : null,
-                'status' => $_GET['status'] ?? '',
-                'video_source_type' => $_GET['video_source_type'] ?? ''
+                'status' => h($_GET['status'] ?? ''),
+                'video_source_type' => h($_GET['video_source_type'] ?? '')
             ];
 
             $result = $search->searchLiveList($params, $page, $perPage); // 改为实例方法调用
             $helpers->jsonResponse(200, true, $result);
             break;
         case 'global':
-            $keyword = $_GET['keyword'] ?? '';
+            $keyword = h($_GET['keyword'] ?? '');
             if (empty($keyword)) {
                 $helpers->jsonResponse(400, '搜索关键词不能为空');
                 break;

@@ -25,9 +25,20 @@ try {
         }
     }
 
-if (!preg_match('/^[a-zA-Z0-9_]+$/', $apiName)) {
-    $helpers->jsonResponse(403, '无效的API名称!');
-}
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', $apiName)) {
+        $helpers->jsonResponse(403, '无效的API名称!');
+    }
+
+    /**
+     * HTML 转义
+     *
+     * @param string $str
+     * @return string
+     */
+    function h(string $str): string
+    {
+        return is_string($str) ? htmlspecialchars($str, ENT_QUOTES, 'UTF-8') : $str;
+    }
 
     $apiFile = __DIR__ . "/$apiName.php";
 

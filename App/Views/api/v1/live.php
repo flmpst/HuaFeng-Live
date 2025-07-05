@@ -38,15 +38,15 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 });
                 // 将过滤后的在线用户数量存入 'peoples'
                 $data[] = [
-                    'id' => $item['id'],
-                    'name' => $item['name'],
-                    'pic' => $item['pic'],
-                    'status' => $item['status'],
-                    'author' => $author['username'],
-                    'authorAvatar' => $userHelpers->getAvatar($userHelpers->getUserInfo(null, $item['user_id'])['email']),
-                    'peoples' => count($filteredOnlineUsers),
+                    'id' => (int)$item['id'],
+                    'name' => h($item['name']),
+                    'pic' => h($item['pic']),
+                    'status' => h($item['status']),
+                    'author' => h($author['username']),
+                    'authorAvatar' => h($userHelpers->getAvatar($userHelpers->getUserInfo(null, $item['user_id'])['email'])),
+                    'peoples' => (int)count($filteredOnlineUsers),
                     // 显示符合条件的用户数量
-                    'description' => $item['description'],
+                    'description' => h($item['description']),
                 ];
             }
             $helpers->jsonResponse(200, true, ['list' => $data]);
@@ -56,10 +56,10 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             if (!$data) {
                 $helpers->jsonResponse(404, '直播间不存在');
             }
-            $data['videoSource'] = $data['video_source'];
-            $data['videoSourceType'] = $data['video_source_type'];
-            $data['author'] = $userHelpers->getUserInfo(null, $data['user_id'])['username'];
-            $data['authorAvatar'] = $userHelpers->getAvatar($userHelpers->getUserInfo(null, $data['user_id'])['email']);
+            $data['videoSource'] = h($data['video_source']);
+            $data['videoSourceType'] = h($data['video_source_type']);
+            $data['author'] = h($userHelpers->getUserInfo(null, $data['user_id'])['username']);
+            $data['authorAvatar'] = h($userHelpers->getAvatar($userHelpers->getUserInfo(null, $data['user_id'])['email']));
             unset($data['video_source_type']);
             unset($data['video_source']);
             $helpers->jsonResponse(200, true, $data);
@@ -84,6 +84,12 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 }
             }
 
+            // 对字符串类型字段进行HTML转义
+            $name = h($_POST['name']);
+            $description = h($_POST['description']);
+            $videoSource = h($_POST['videoSource']);
+            $videoSourceType = h($_POST['videoSourceType']);
+
             // 验证图片上传
             $picUrl = null;
             if (!empty($_POST['pic'])) {
@@ -91,17 +97,17 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                     $helpers->jsonResponse(400, '封面URL格式不正确');
                     exit;
                 }
-                $picUrl = $_POST['pic'];
+                $picUrl = h($_POST['pic']);
             }
 
             // 验证视频源URL
-            if (!filter_var($_POST['videoSource'], FILTER_VALIDATE_URL)) {
+            if (!filter_var($videoSource, FILTER_VALIDATE_URL)) {
                 $helpers->jsonResponse(400, '直播源URL格式不正确');
                 exit;
             }
 
             // 验证视频源类型
-            if (!in_array($_POST['videoSourceType'], ['flv', 'mp4', 'm3u8'])) {
+            if (!in_array($videoSourceType, ['flv', 'mp4', 'm3u8'])) {
                 $helpers->jsonResponse(400, '直播源类型不支持');
                 exit;
             }
@@ -109,11 +115,12 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
             // 准备数据
             $data = [
                 'user_id' => $userInfo['user_id'],
-                'name' => $_POST['name'],
+                'name' => $name,
                 'pic' => $picUrl,
-                'video_source' => $_POST['videoSource'],
-                'video_source_type' => $_POST['videoSourceType'],
-                'description' => $_POST['description'],
+                'video_source' => $videoSource,
+                'video_source_type' => $videoSourceType,
+                'description' => $description,
+                'css' => ''
             ];
 
             // 保存直播信息
@@ -152,6 +159,12 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                 }
             }
 
+            // 对字符串类型字段进行HTML转义
+            $name = h($_POST['name']);
+            $description = h($_POST['description']);
+            $videoSource = h($_POST['videoSource']);
+            $videoSourceType = h($_POST['videoSourceType']);
+
             // 验证图片上传
             $picUrl = $liveData['pic']; // 默认使用原来的图片
             if (isset($_FILES['pic']) && $_FILES['pic']['error'] === UPLOAD_ERR_OK) {
@@ -162,30 +175,33 @@ if (preg_match('/^[a-zA-Z0-9]{1,30}$/', $method)) {
                     $helpers->jsonResponse(400, '封面URL格式不正确');
                     exit;
                 }
-                $picUrl = $_POST['pic'];
+                $picUrl = h($_POST['pic']);
             }
 
             // 验证视频源URL
-            if (!filter_var($_POST['videoSource'], FILTER_VALIDATE_URL)) {
+            if (!filter_var($videoSource, FILTER_VALIDATE_URL)) {
                 $helpers->jsonResponse(400, '直播源URL格式不正确');
                 exit;
             }
 
             // 验证视频源类型
-            if (!in_array($_POST['videoSourceType'], ['flv', 'mp4', 'm3u8'])) {
+            if (!in_array($videoSourceType, ['flv', 'mp4', 'm3u8'])) {
                 $helpers->jsonResponse(400, '直播源类型不支持');
                 exit;
             }
 
+            // 对css字段进行HTML转义（如果有）
+            $css = isset($_POST['css']) ? h($_POST['css']) : $liveData['css'];
+
             // 准备数据
             $data = [
                 'user_id' => $liveData['user_id'],
-                'name' => $_POST['name'],
+                'name' => $name,
                 'pic' => $picUrl,
-                'video_source' => $_POST['videoSource'],
-                'video_source_type' => $_POST['videoSourceType'],
-                'description' => $_POST['description'],
-                'css' => $_POST['css'] ?? $liveData['css'],
+                'video_source' => $videoSource,
+                'video_source_type' => $videoSourceType,
+                'description' => $description,
+                'css' => $css,
             ];
 
             // 更新直播信息

@@ -1,85 +1,80 @@
-BEGIN TRANSACTION;
-DROP TABLE IF EXISTS "admin_login_attempts";
-CREATE TABLE "admin_login_attempts" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"ip_address"	TEXT NOT NULL,
-	"attempts"	INTEGER NOT NULL DEFAULT 0,
-	"last_attempt"	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	"is_blocked"	INTEGER NOT NULL DEFAULT 0,
-	PRIMARY KEY("id" AUTOINCREMENT)
+-- SQLite version of the database schema
+
+-- Table structure for `groups`
+CREATE TABLE `groups` (
+  `group_id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `group_name` TEXT NOT NULL UNIQUE,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-DROP TABLE IF EXISTS "events";
-CREATE TABLE "events" (
-	"event_id"	INTEGER,
-	"event_type"	VARCHAR(100) NOT NULL,
-	"user_id"	INT NOT NULL,
-	"target_id"	INT NOT NULL,
-	"created_at"	DATETIME NOT NULL,
-	"additional_data"	TEXT,
-	PRIMARY KEY("event_id" AUTOINCREMENT)
+
+-- Table structure for `live_list`
+CREATE TABLE `live_list` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `user_id` INTEGER NOT NULL,
+  `name` TEXT NOT NULL,
+  `pic` TEXT,
+  `description` TEXT NOT NULL,
+  `video_source` TEXT NOT NULL,
+  `video_source_type` TEXT NOT NULL,
+  `css` TEXT NOT NULL,
+  `status` TEXT DEFAULT 'active'
 );
-DROP TABLE IF EXISTS "groups";
-CREATE TABLE "groups" (
-	"group_id"	INTEGER NOT NULL UNIQUE,
-	"group_name"	TEXT NOT NULL UNIQUE,
-	"created_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY("group_id" AUTOINCREMENT)
+
+-- Table structure for `messages`
+CREATE TABLE `messages` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `room_id` INTEGER,
+  `type` TEXT DEFAULT 'user',
+  `content` TEXT NOT NULL,
+  `danmaku` TEXT NOT NULL,
+  `user_id` INTEGER NOT NULL,
+  `user_ip` TEXT,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `status` TEXT DEFAULT 'active'
 );
-DROP TABLE IF EXISTS "messages";
-CREATE TABLE "messages" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"room_id"	INTEGER,
-	"type"	TEXT DEFAULT 'user',
-	"content"	TEXT NOT NULL,
-	"user_id"	INTEGER NOT NULL,
-	"user_ip"	TEXT,
-	"created_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	"status"	TEXT DEFAULT 'active',
-	PRIMARY KEY("id" AUTOINCREMENT)
+
+-- Table structure for `users`
+CREATE TABLE `users` (
+  `user_id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `username` TEXT NOT NULL,
+  `avatar` TEXT,
+  `password` TEXT NOT NULL,
+  `email` TEXT NOT NULL UNIQUE,
+  `register_ip` TEXT NOT NULL,
+  `group_id` INTEGER NOT NULL DEFAULT 2,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` INTEGER NOT NULL DEFAULT 0,
+  `sets` TEXT
 );
-DROP TABLE IF EXISTS "room_sets";
-CREATE TABLE "room_sets" (
-	"id"	INTEGER UNIQUE,
-	"user_id"	INTEGER,
-	"value"	TEXT,
-	"status"	TEXT DEFAULT 'active',
-	PRIMARY KEY("id" AUTOINCREMENT)
+
+-- Table structure for `user_settings`
+CREATE TABLE `user_settings` (
+  `uuid` TEXT PRIMARY KEY,
+  `user_id` TEXT NOT NULL,
+  `client_id` TEXT NOT NULL,
+  `setting_name` TEXT NOT NULL,
+  `setting_value` TEXT,
+  `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_ip` TEXT,
+  UNIQUE (`user_id`, `client_id`, `setting_name`)
 );
-DROP TABLE IF EXISTS "system_logs";
-CREATE TABLE "system_logs" (
-	"log_id"	INTEGER NOT NULL UNIQUE,
-	"log_type"	TEXT NOT NULL,
-	"message"	TEXT NOT NULL,
-	"created_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY("log_id" AUTOINCREMENT)
+
+-- Table structure for `user_tokens`
+CREATE TABLE `user_tokens` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `user_id` INTEGER NOT NULL,
+  `type` TEXT NOT NULL,
+  `token` TEXT NOT NULL,
+  `expiration` DATETIME NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  `extra` TEXT
 );
-DROP TABLE IF EXISTS "user_tokens";
-CREATE TABLE "user_tokens" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"user_id"	INTEGER NOT NULL,
-	"type"	INTEGER NOT NULL,
-	"token"	VARCHAR(256) NOT NULL,
-	"expiration"	DATETIME NOT NULL,
-	"created_at"	DATETIME NOT NULL,
-	"updated_at"	DATETIME NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
-DROP TABLE IF EXISTS "users";
-CREATE TABLE "users" (
-	"user_id"	INTEGER NOT NULL UNIQUE,
-	"username"	TEXT NOT NULL UNIQUE,
-	"password"	TEXT NOT NULL,
-	"email"	TEXT,
-	"register_ip"	REAL,
-	"group_id"	INTEGER NOT NULL DEFAULT 2,
-	"created_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	"status"	INTEGER DEFAULT 0,
-	"sets"	TEXT,
-	PRIMARY KEY("user_id" AUTOINCREMENT)
-);
+
 INSERT INTO "groups" ("group_id","group_name","created_at") VALUES (1,'管理员','2025-01-28 08:34:00'),
  (2,'普通用户','2025-01-28 08:34:00');
-DROP INDEX IF EXISTS "admin_login_attempts_index";
+
+ DROP INDEX IF EXISTS "admin_login_attempts_index";
 CREATE UNIQUE INDEX "admin_login_attempts_index" ON "admin_login_attempts" (
 	"id"
 );

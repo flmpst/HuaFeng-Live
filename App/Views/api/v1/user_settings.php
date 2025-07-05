@@ -12,9 +12,9 @@ $userSettings = new UserSettings();
 if (preg_match('/^[a-zA-Z0-9_]{1,30}$/', $method)) {
     switch ($method) {
         case 'get':
-            $user_id = $_GET['user_id'] ?? '';
-            $client_id = $_GET['client_id'] ?? '';
-            $setting_name = $_GET['setting_name'] ?? null;
+            $user_id = (int)($_GET['user_id'] ?? '');
+            $client_id = h($_GET['client_id'] ?? '');
+            $setting_name = h($_GET['setting_name'] ?? null);
             if (empty($user_id) || empty($client_id)) {
                 $helpers->jsonResponse(400, 'user_id和client_id不能为空');
                 break;
@@ -23,11 +23,11 @@ if (preg_match('/^[a-zA-Z0-9_]{1,30}$/', $method)) {
             $helpers->jsonResponse(200, true, $result);
             break;
         case 'set':
-            $user_id = $_POST['user_id'] ?? '';
-            $client_id = $_POST['client_id'] ?? '';
-            $setting_name = $_POST['setting_name'] ?? '';
-            $setting_value = $_POST['setting_value'] ?? null;
-            $update_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+            $user_id = (int)h($_POST['user_id'] ?? '');
+            $client_id = h($_POST['client_id'] ?? '');
+            $setting_name = h($_POST['setting_name'] ?? '');
+            $setting_value = h($_POST['setting_value'] ?? null);
+            $update_ip = h($_SERVER['REMOTE_ADDR'] ?? '');
             if (empty($user_id) || empty($client_id) || empty($setting_name)) {
                 $helpers->jsonResponse(400, 'user_id、client_id和setting_name不能为空');
                 break;
@@ -36,9 +36,9 @@ if (preg_match('/^[a-zA-Z0-9_]{1,30}$/', $method)) {
             $helpers->jsonResponse($success ? 200 : 500, $success, ['message' => $success ? '设置成功' : '设置失败']);
             break;
         case 'delete':
-            $user_id = $_POST['user_id'] ?? '';
-            $client_id = $_POST['client_id'] ?? '';
-            $setting_name = $_POST['setting_name'] ?? '';
+            $user_id = (int)h($_POST['user_id'] ?? '');
+            $client_id = h($_POST['client_id'] ?? '');
+            $setting_name = h($_POST['setting_name'] ?? '');
             if (empty($user_id) || empty($client_id) || empty($setting_name)) {
                 $helpers->jsonResponse(400, 'user_id、client_id和setting_name不能为空');
                 break;
@@ -47,9 +47,9 @@ if (preg_match('/^[a-zA-Z0-9_]{1,30}$/', $method)) {
             $helpers->jsonResponse($success ? 200 : 500, $success, ['message' => $success ? '删除成功' : '删除失败']);
             break;
         case 'sync':
-            $user_id = $_POST['user_id'] ?? '';
-            $source_client_id = $_POST['source_client_id'] ?? '';
-            $target_client_id = $_POST['target_client_id'] ?? '';
+            $user_id = (int)($_POST['user_id'] ?? '');
+            $source_client_id = h($_POST['source_client_id'] ?? '');
+            $target_client_id = h($_POST['target_client_id'] ?? '');
             if (empty($user_id) || empty($source_client_id) || empty($target_client_id)) {
                 $helpers->jsonResponse(400, 'user_id、source_client_id和target_client_id不能为空');
                 break;
