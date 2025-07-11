@@ -1,15 +1,4 @@
 <?php
-// 判断是否进行客户端登录 method=clientAuth&clientid=xxxxx
-
-$method = 'default';
-$clientid = '';
-
-use ChatRoom\Core\Modules\TokenManager;
-
-if (isset($_GET['method']) && $_GET['method'] === 'clientAuth' && isset($_GET['clientid'])) {
-    $method = 'clientAuth';
-    $clientid = $_GET['clientid'] ?? null;
-}
 if (!$userHelpers->checkUserLoginStatus()) {
 ?>
     <div class="mdui-dialog custom-dialog" id="user">
@@ -37,7 +26,7 @@ if (!$userHelpers->checkUserLoginStatus()) {
     <script>
         initGeetest4({
             product: 'popup',
-            captchaId: '<?= $this->appConfig->geetest['captchaId'] ?>'
+            captchaId: '<?= $appConfig->geetest['captchaId'] ?>'
         }, function(captcha) {
             captcha.appendTo("#captcha");
             captcha.onSuccess(function() {
@@ -129,136 +118,11 @@ if ($userHelpers->checkUserLoginStatus()) {
         <div class="mdui-dialog-actions">
             <button class="mdui-btn mdui-ripple mdui-float-left" mdui-dialog-close>关闭</button>
             <button class="mdui-btn mdui-ripple mdui-float-left" id="user-panel-logout-btn">退出登录</button>
-            <button class="mdui-btn mdui-btn-raised mdui-ripple" mdui-dialog-close mdui-dialog="{target: '#user-openapi'}">开发者选项</button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple" onclick="window.location.href='/dev'">开发者中心</button>
             <button class="mdui-btn mdui-btn-raised mdui-ripple" id="user-panel-btn">确定</button>
         </div>
     </div>
-    <div class="mdui-dialog custom-dialog" id="user-openapi">
-        <div class="mdui-dialog-title mdui-color-grey-800">
-            <p>
-                开发者选项
-            </p>
-        </div>
-        <div class="mdui-dialog-content mdui-typo">
-            <p class="mdui-text-color-white">
-                API TOKENS
-            </p>
-            <hr>
-            <p class="mdui-text-color-red-accent">
-                警告：请务必妥善保管您的API密钥，拥有密钥等于拥有您的账号操作的一切权限， 如自行泄露密钥导致损失花枫工作室将不承担任何责任。
-            </p>
-            <div class="" id="api-token-list">
-                <?php
-                $tokenManager = new TokenManager;
-                $userId = $userHelpers->getUserInfoByEnv()['user_id'];
-                $tokens = $tokenManager->getTokens($userId);
-                if (!empty($tokens)) {
-                    foreach ($tokens as $token) {
-                        // 处理extra数据
-                        $extraDisplay = '无';
-                        if (!empty($token['extra'])) {
-                            try {
-                                $unserialized = @unserialize($token['extra']);
-                                if ($unserialized !== false) {
-                                    $extraDisplay = json_encode($unserialized, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                                } else {
-                                    $extraDisplay = htmlspecialchars($token['extra']);
-                                }
-                            } catch (Exception $e) {
-                                $extraDisplay = '数据解析错误';
-                            }
-                        }
-                        echo sprintf(
-                            '<li class="mdui-list-item mdui-ripple token-item">
-							            <div class="mdui-list-item-content">
-							                <div class="mdui-list-item-title mdui-text-color-blue">
-							                    <i class="mdui-icon material-icons">%s</i> %s
-							                </div>
-							               <div class="mdui-list-item-text mdui-text-color-white-secondary">
-									      		类型: %s
-									       </div>
-									       <div class="mdui-list-item-text mdui-text-color-white-secondary extra-data" style="display:none">
-							                    <i class="mdui-icon material-icons">info</i> 额外数据:
-							                    <div class="mdui-typo">
-							                    	<pre class="mdui-m-t-1">%s</pre>
-							                    </div>
-							                </div>
-							            </div>
-							            <div class="token-actions">
-							                <button class="mdui-btn mdui-btn-icon mdui-ripple copy-token-btn" title="复制Token" data-token="%s">
-							                    <i class="mdui-icon material-icons">content_copy</i>
-							                </button>
-							                <button class="mdui-btn mdui-btn-icon mdui-ripple toggle-extra-btn" title="显示额外数据">
-							                    <i class="mdui-icon material-icons">expand_more</i>
-							                </button>
-							            </div>
-							        </li>',
-                            $tokenManager->getTokenIcon($token['type']), // 根据类型返回不同图标
-                            htmlspecialchars($token['created_at'], ENT_QUOTES, 'UTF-8'),
-                            $token['type'],
-                            $extraDisplay,
-                            htmlspecialchars($token['token'], ENT_QUOTES, 'UTF-8')
-                        );
-                    }
-                } else {
-                    echo '<li class="mdui-list-item mdui-text-center">没有API密钥</li>';
-                }
-                ?>
-            </div>
-        </div>
-        <div class="mdui-dialog-actions">
-            <button class="mdui-btn mdui-ripple mdui-float-left" id="user-openapi-btn">删除所有TOKEN</button>
-            <button class="mdui-btn mdui-ripple mdui-float-left" id="user-openapi-new-btn">生成新的API TOKEN</button>
-            <button class="mdui-btn mdui-btn-raised mdui-ripple" mdui-dialog-close mdui-dialog="{target: '#user-panel'}">返回设置面板</button>
-        </div>
-    </div>
-    <?php
-    if ($method === 'clientAuth') {
-    ?>
-        <div class="mdui-dialog custom-dialog" id="client-auth">
-            <div class="mdui-dialog-title mdui-color-grey-800">
-                是否授权客户端？<span id="client-auth-msg"></span>
-            </div>
-            <form class="mdui-dialog-content mdui-typo" id="client-auth-form">
-                <div class="mdui-textfield mdui-textfield-floating-label mdui-text-color-white">
-                    <div class="mdui-col mdui-col-xs-2">
-                        <p>
-                            客户端ID：
-                        </p>
-                    </div>
-                    <div class="mdui-col mdui-col-xs-10">
-                        <pre id="api-token-display" class="mdui-text-color-white"><?= $clientid ?></pre>
-                    </div>
-                </div>
-            </form>
-            <div class="mdui-dialog-actions">
-                <button class="mdui-btn mdui-ripple" mdui-dialog-close id="client-auth-close">关闭</button>
-                <button class="mdui-btn mdui-btn-raised mdui-ripple" id="client-auth-btn">授权</button>
-            </div>
-        </div>
-        <script>
-            new mdui.Dialog('#client-auth').open();
-            $('#client-auth-btn').on('click', function() {
-                $.ajax({
-                    type: "GET",
-                    url: "/api/v1/user/clientAuth?method=webAuth&clientid=<?= $clientid ?>",
-                    dataType: "JSON",
-                    success: function(response) {
-                        alert('成功授权，请在客户端查看');
-                        location.href = '/';
-                    },
-                    error: function(xhr) {
-                        $('#client-auth-msg').text(`网站服务端出错！${xhr.state} ${xhr.code}`);
-                    }
-                });
-            });
-            $('#client-auth-close').click(function(e) {
-                location.href = '/';
-            });
-        </script>
-    <?php
-    }
-    ?>
+
     <div class="mdui-dialog custom-dialog" id="add-live">
         <div class="mdui-dialog-title mdui-color-grey-800">
             创建直播 <span id="add-live-msg" class="mdui-color-red"></span>

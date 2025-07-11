@@ -129,7 +129,7 @@ async function checkNewMessages() {
 function displayMessage(msg) {
     $('#danmaku-container').append(`
         <p class="danmaku">
-            <img class="avatar" src="${msg.avatar || 'default-avatar.png'}">${msg.username || '匿名用户'}: ${msg.content}
+            <img class="avatar" src="${msg.avatar || 'default-avatar.png'}">${msg.content}
         </p>`);
     // 读取本地弹幕显示和透明度设置
     const danmakuShow = localStorage.getItem('dplayer-danmaku-show');
@@ -171,7 +171,7 @@ function displayMessage(msg) {
     });
 
     const avatar = msg.avatar ? `<img class="danmaku-avatar" src="${msg.avatar}" alt="头像">` : '';
-    danmakuElement.html(`${avatar}<span class="danmaku-text">${msg.username || '匿名用户'}: ${msg.content}</span>`);
+    danmakuElement.html(`${avatar}<span class="danmaku-text">${msg.content}</span>`);
 
     const containerWidth = videoContainer.width();
     const containerHeight = videoContainer.height();

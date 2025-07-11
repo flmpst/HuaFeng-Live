@@ -1,21 +1,22 @@
 <?php
 
 /***
- *        __  __            ______                 __    _          
- *       / / / /_  ______ _/ ____/__  ____  ____ _/ /   (_)   _____ 
- *      / /_/ / / / / __ `/ /_  / _ \/ __ \/ __ `/ /   / / | / / _ \
- *     / __  / /_/ / /_/ / __/ /  __/ / / / /_/ / /___/ /| |/ /  __/
- *    /_/ /_/\__,_/\__,_/_/    \___/_/ /_/\__, /_____/_/ |___/\___/ 
- *                                       /____/                     
- * --------------------------------------------------- 自托管式直播列表
- * @author 花枫工作室
- * @license Apache
- * @link https://github.com/flmpst/HuaFeng-Live
+ *       _  __   ____     ____     ______
+ *      | |/ /  / __ \   / __ \   / ____/
+ *      |   /  / / / /  / /_/ /  / /_    
+ *     /   |  / /_/ /  / ____/  / __/    
+ *    /_/|_|  \___\_\ /_/      /_/       
+ * ------------------- 轻量级PHP快速启动框架
+ * 快速启动一个PHP项目，提供基础的MVC架构和常用功能。
+ * @package   XQPF
+ * @author    小枫_QWQ
+ * @link http://url.com
+ * @copyright 2025 小枫_QWQ
  */
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/config.global.php';
 
-use ChatRoom\Core\Main;
+use XQPF\Core\Main;
 
 $App = new Main;
 $App->run();

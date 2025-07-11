@@ -92,32 +92,3 @@ canvas {
     max-height: 200px;
     white-space: normal;
 }
-
-
-#footer {
-    background-color: #222;
-    color: #bbb;
-    font-size: 14px;
-    text-align: center;
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    opacity: 0.8;
-}
-
-#footer a {
-    color: #fff;
-    text-decoration: none;
-    margin: 0 10px;
-    transition: color 0.3s ease;
-}
-
-#footer a:hover {
-    color: #ffcc00;
-}
-
-#footer p {
-    margin: 5px 0;
-    width: 100%;
-}

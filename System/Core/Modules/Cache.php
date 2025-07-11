@@ -1,9 +1,16 @@
 <?php
 
-namespace ChatRoom\Core\Modules;
+namespace XQPF\Core\Modules;
 
 use Exception;
 
+/**
+ * 缓存类
+ * 
+ * 该类提供了基本的文件缓存功能，支持设置、获取、删除和清空缓存项。
+ * 
+ * @package XQPF\Core\Modules
+ */
 class Cache
 {
     private array $config;

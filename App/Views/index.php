@@ -1,9 +1,3 @@
-<?php
-
-use ChatRoom\Core\Helpers\User;
-
-$userHelpers = new User;
-?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -65,15 +59,16 @@ $userHelpers = new User;
         </p>
     </footer>
 
-    <script src="/StaticResources/js/mdui.min.js"></script>
-    <script src="/StaticResources/js/jquery.min.js"></script>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/mdui/1.0.2/js/mdui.min.js"></script>
+    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script>
     <script src="/StaticResources/js/backgroundScript.js"></script>
     <script src="/StaticResources/js/index.js?<?= FRAMEWORK_VERSION ?>"></script>
     <?php
-    require_once FRAMEWORK_APP_PATH . '/Views/module/user.php'
+    $this->loadView('/module/user', [
+        'userHelpers' => $userHelpers,
+        'appConfig' => $appConfig
+    ]);
     ?>
 </body>
 
 </html>
-<?php
-require_once FRAMEWORK_APP_PATH . '/Views/module/common.php';

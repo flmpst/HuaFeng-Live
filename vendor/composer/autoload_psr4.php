@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'XQPF\\' => array($baseDir . '/System'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
-    'ChatRoom\\' => array($baseDir . '/System'),
+    'HuaFengLive\\' => array($baseDir . '/App'),
 );

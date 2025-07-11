@@ -1,10 +1,28 @@
 {
+    "name": "xiaofeng/xqpf",
+    "description": "快速启动一个PHP项目，提供基础的MVC架构和常用功能。",
+    "type": "project",
+    "license": "Apache",
     "autoload": {
         "psr-4": {
-            "ChatRoom\\": "System/"
+            "XQPF\\": "System/",
+            "HuaFengLive\\": "App/"
+        }
+    },
+    "authors": [
+        {
+            "name": "XiaoFeng-QWQ",
+            "email": "q1432777209@126.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "config": {
+        "allow-plugins": {
+            "symfony/flex": true
         }
     },
     "require": {
-        "phpmailer/phpmailer": "^6.9"
+        "phpmailer/phpmailer": "^6.10",
+        "erusev/parsedown": "^1.7"
     }
 }

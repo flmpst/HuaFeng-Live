@@ -20,6 +20,20 @@ CREATE TABLE `live_list` (
   `status` TEXT DEFAULT 'active'
 );
 
+-- Table structure for third_party_apps
+CREATE TABLE `third_party_apps` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `user_id` INTEGER NOT NULL,
+  `app_id` TEXT NOT NULL,
+  `app_secret` TEXT NOT NULL,
+  `app_name` TEXT NOT NULL,
+  `app_description` TEXT,
+  `redirect_uri` TEXT,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  UNIQUE (`app_id`)
+);
+
 -- Table structure for `messages`
 CREATE TABLE `messages` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,44 +88,58 @@ CREATE TABLE `user_tokens` (
 INSERT INTO "groups" ("group_id","group_name","created_at") VALUES (1,'管理员','2025-01-28 08:34:00'),
  (2,'普通用户','2025-01-28 08:34:00');
 
- DROP INDEX IF EXISTS "admin_login_attempts_index";
-CREATE UNIQUE INDEX "admin_login_attempts_index" ON "admin_login_attempts" (
-	"id"
-);
-DROP INDEX IF EXISTS "events_index";
-CREATE INDEX "events_index" ON "events" (
-	"event_id",
-	"event_type"
-);
+-- 1. groups 表索引
 DROP INDEX IF EXISTS "groups_index";
 CREATE UNIQUE INDEX "groups_index" ON "groups" (
-	"group_id",
-	"group_name"
+    "group_id",
+    "group_name"
 );
+
+-- 2. live_list 表索引
+DROP INDEX IF EXISTS "live_list_index";
+CREATE INDEX "live_list_user_id_index" ON "live_list" ("user_id");
+CREATE INDEX "live_list_status_index" ON "live_list" ("status");
+CREATE INDEX "live_list_video_source_type_index" ON "live_list" ("video_source_type");
+
+-- 3. third_party_apps 表索引
+CREATE INDEX "third_party_apps_user_id_index" ON "third_party_apps" ("user_id");
+CREATE INDEX "third_party_apps_created_at_index" ON "third_party_apps" ("created_at");
+CREATE INDEX "third_party_apps_updated_at_index" ON "third_party_apps" ("updated_at");
+
+-- 4. messages 表索引
 DROP INDEX IF EXISTS "messages_index";
-CREATE UNIQUE INDEX "messages_index" ON "messages" (
-	"id",
-	"room_id"
-);
-DROP INDEX IF EXISTS "room_sets_index";
-CREATE UNIQUE INDEX "room_sets_index" ON "room_sets" (
-	"id",
-	"user_id"
-);
-DROP INDEX IF EXISTS "system_logs_index";
-CREATE UNIQUE INDEX "system_logs_index" ON "system_logs" (
-	"log_id"
-);
-DROP INDEX IF EXISTS "user_tokens_index";
-CREATE UNIQUE INDEX "user_tokens_index" ON "user_tokens" (
-	"id",
-	"user_id"
-);
+CREATE INDEX "messages_room_id_created_at_index" ON "messages" ("room_id", "created_at");
+CREATE INDEX "messages_user_id_index" ON "messages" ("user_id");
+CREATE INDEX "messages_status_index" ON "messages" ("status");
+CREATE INDEX "messages_created_at_index" ON "messages" ("created_at");
+CREATE INDEX "messages_type_index" ON "messages" ("type");
+
+-- 5. users 表索引
 DROP INDEX IF EXISTS "users_index";
 CREATE UNIQUE INDEX "users_index" ON "users" (
-	"user_id",
-	"email",
-	"username",
-	"register_ip"
+    "user_id",
+    "email",
+    "username",
+    "register_ip"
 );
+CREATE INDEX "users_group_id_index" ON "users" ("group_id");
+CREATE INDEX "users_status_index" ON "users" ("status");
+CREATE INDEX "users_created_at_index" ON "users" ("created_at");
+CREATE INDEX "users_username_index" ON "users" ("username");
+
+-- 6. user_settings 表索引
+CREATE INDEX "user_settings_client_id_index" ON "user_settings" ("client_id");
+CREATE INDEX "user_settings_setting_name_index" ON "user_settings" ("setting_name");
+CREATE INDEX "user_settings_update_time_index" ON "user_settings" ("update_time");
+
+-- 7. user_tokens 表索引
+DROP INDEX IF EXISTS "user_tokens_index";
+CREATE UNIQUE INDEX "user_tokens_index" ON "user_tokens" (
+    "id",
+    "user_id"
+);
+CREATE INDEX "user_tokens_token_index" ON "user_tokens" ("token");
+CREATE INDEX "user_tokens_expiration_index" ON "user_tokens" ("expiration");
+CREATE INDEX "user_tokens_type_index" ON "user_tokens" ("type");
+CREATE INDEX "user_tokens_user_id_type_index" ON "user_tokens" ("user_id", "type");
 COMMIT;

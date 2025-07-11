@@ -1,14 +1,4 @@
 <?php
-
-use ChatRoom\Core\Helpers\User;
-use ChatRoom\Core\Controller\Live;
-
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$liveId = isset(explode('/', trim($uri, '/'))[0]) ? explode('/', trim($uri, '/'))[0] : null;
-$live = new Live;
-$liveData = $live->get($liveId);
-$userHelpers = new User;
-
 // 如果直播间数据不存在，显示404页面
 if (!$liveData) {
 ?>
@@ -265,10 +255,10 @@ if (!$liveData) {
         </p>
     </footer>
 
-    <script src="/StaticResources/js/mdui.min.js"></script>
-    <script src="/StaticResources/js/jquery.min.js"></script>
-    <script src="/StaticResources/js/DPlayer.min.js"></script>
-    <script src="/StaticResources/js/flv.min.js"></script>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/mdui/1.0.2/js/mdui.min.js"></script>
+    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/dplayer/1.26.0/DPlayer.min.js"></script>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/flv.js/1.6.2/flv.min.js"></script>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/hls.js/8.0.0-beta.3/hls.min.js" type="application/javascript"></script>
     <script src="/StaticResources/js/live.js?<?= FRAMEWORK_VERSION ?>"></script>
     <script>
@@ -296,5 +286,3 @@ if (!$liveData) {
 </body>
 
 </html>
-<?php
-require_once FRAMEWORK_APP_PATH . '/Views/module/common.php';

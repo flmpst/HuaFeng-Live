@@ -1,23 +1,24 @@
 <?php
 
-namespace ChatRoom\Core;
+namespace XQPF\Core;
 
-use ChatRoom\Core\Modules\WebSecurity;
+use XQPF\Core\Helpers\Helpers;
+use XQPF\Core\Modules\WebSecurity;
 
 /**
- *     _____   _ ________                     ________          __  ____  ____  ____  __  ___
- *    /__  /  (_) ____/ /_  ___  ____  ____ _/ ____/ /_  ____ _/ /_/ __ \/ __ \/ __ \/  |/  /
- *      / /  / / /   / __ \/ _ \/ __ \/ __ `/ /   / __ \/ __ `/ __/ /_/ / / / / / / / /|_/ / 
- *     / /__/ / /___/ / / /  __/ / / / /_/ / /___/ / / / /_/ / /_/ _, _/ /_/ / /_/ / /  / /  
- *    /____/_/\____/_/ /_/\___/_/ /_/\__, /\____/_/ /_/\__,_/\__/_/ |_|\____/\____/_/  /_/   
- *                                  /____/                                                   
- * ------------------------------------------------------------------ Powered By:XiaoFeng_QWQ
+ *       _  __   ____     ____     ______
+ *      | |/ /  / __ \   / __ \   / ____/
+ *      |   /  / / / /  / /_/ /  / /_    
+ *     /   |  / /_/ /  / ____/  / __/    
+ *    /_/|_|  \___\_\ /_/      /_/       
+ * ------------------- 轻量级PHP快速启动框架
+ * 
+ * 快速启动一个PHP项目，提供基础的MVC架构和常用功能。
  * 注意事项：
  * - 文件路径必须遵守以下规则：
  *   - 路径末尾不得有斜杠 ("/")。
  *   - 路径必须以斜杠 ("/") 开头。
  *   - URI 也需符合以上规则。
- * - 安装检测通过检查常量 `FRAMEWORK_DATABASE_PATH` 是否定义来完成。
  * -----------------------------------
  * 命名规范：
  * - `System` 目录下的所有文件使用大驼峰命名法。
@@ -26,11 +27,12 @@ use ChatRoom\Core\Modules\WebSecurity;
  * - 函数名使用小驼峰，函数内部变量也是
  * -----------------------------------
  * 
- * @copyright 2024 - 2025 XiaoFeng-QWQ
- * @version FRAMEWORK_VERSION
- * @author XiaoFeng-QWQ <1432777209@qq.com>
+ * @package   XQPF
+ * @author    小枫_QWQ
  * @license Apache
- * @link https://github.com/XiaoFeng-QWQ/zicheng-web-chat-room
+ * @version 1.0.0.0
+ * @link http://url.com
+ * @copyright 2025 小枫_QWQ
  */
 class Main
 {
@@ -48,7 +50,7 @@ class Main
     private function initialize(): void
     {
         require_once FRAMEWORK_DIR . '/System/Core/Modules/HandleException.php';
-        require_once FRAMEWORK_DIR . '/System/Core/Modules/Waf.php';
+        require_once FRAMEWORK_DIR . '/System/Core/Modules/WebSecurity.php';
 
         /**
          * 注册错误处理函数
@@ -94,19 +96,10 @@ class Main
     public function run(): void
     {
         $this->initialize();
-
-        // 调试模式直接跳过安装
-        if (defined('FRAMEWORK_DEBUG') && FRAMEWORK_DEBUG) {
-            exit($this->route->processRoutes());
-        }
-
-        // 检查安装状态
-        if (!FRAMEWORK_INSTALL_LOCK) {
-            header('Location: /Admin/install/index.php');
-            exit;
-        }
-
         // 启动路由处理
         $this->route->processRoutes();
+
+        $helpers = new Helpers;
+        $helpers->debugBar();
     }
 }

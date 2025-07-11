@@ -251,7 +251,7 @@ $(document).ready(function () {
                 if (uploadResponse.code !== 200) {
                     throw new Error(uploadResponse.message || '封面图片上传失败');
                 }
-                formData.set('pic', `https://live.dfggmc.top/${uploadResponse.data.path}`); // 替换为服务器返回的路径
+                formData.set('pic', `https://live.dfggmc.top/${uploadResponse.data.path}`)
             }
 
             btn.html('<i class="mdui-icon material-icons">hourglass_empty</i> 创建中...');
@@ -279,80 +279,5 @@ $(document).ready(function () {
             // 无论成功或失败都移除进度条
             $('.mdui-progress').remove();
         }
-    });
-
-    $(document).ready(function () {
-        $('.copy-token-btn').on('click', function () {
-            var token = $(this).data('token'); // 获取 data-token 属性
-            var $textArea = $('<textarea>').val(token).appendTo('body'); // 创建一个 textarea 并将 token 设置为其值
-            $textArea.select(); // 选择内容
-            document.execCommand('copy'); // 执行复制
-            $textArea.remove(); // 删除临时的 textarea
-            alert('Token 已复制!'); // 弹出提示
-        });
-
-        document.querySelectorAll('.toggle-extra-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const extraData = this.closest('.token-item').querySelector('.extra-data');
-                const icon = this.querySelector('.mdui-icon');
-
-                if (extraData.style.display === 'none') {
-                    extraData.style.display = 'block';
-                    icon.textContent = 'expand_less';
-                    this.setAttribute('title', '隐藏额外数据');
-                } else {
-                    extraData.style.display = 'none';
-                    icon.textContent = 'expand_more';
-                    this.setAttribute('title', '显示额外数据');
-                }
-            });
-        });
-    });
-
-    $('#user-openapi-btn').on('click', function () {
-        mdui.snackbar({
-            message: '您确定要删除所有 Token 吗？',
-            buttonText: '是的，我确定',
-            onButtonClick: function () {
-                $.ajax({
-                    type: "POST",
-                    url: "/api/v1/refresh",
-                    dataType: "JSON",
-                    success: function (response) {
-                        if (response.code === 200) {
-                            $('#api-token-display').text(response.data)
-                            mdui.snackbar({ message: `成功！`, timeout: 2000 });
-                            location.href = '/';
-                        } else {
-                            mdui.snackbar({ message: `失败！${response.message}`, timeout: 2000 });
-                        }
-                    },
-                    error: function (xhr) {
-                        mdui.snackbar({ message: `失败！${xhr.message}`, timeout: 2000 });
-                    }
-                });
-            },
-        });
-    });
-
-    $('#user-openapi-new-btn').click(function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "/api/v1/refresh?method=refresh",
-            dataType: "JSON",
-            success: function (response) {
-                if (response.code === 200) {
-                    $('#api-token-display').text(response.data)
-                    mdui.snackbar({ message: `成功！`, timeout: 2000 });
-                    location.href = '/';
-                } else {
-                    mdui.snackbar({ message: `失败！${response.message}`, timeout: 2000 });
-                }
-            },
-            error: function (xhr) {
-                mdui.snackbar({ message: `失败！${xhr.message}`, timeout: 2000 });
-            }
-        });
     });
 });

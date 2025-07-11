@@ -1,6 +1,6 @@
 <?php
 
-namespace ChatRoom\Core\Helpers;
+namespace XQPF\Core\Helpers;
 
 /**
  * HTML 生成辅助类

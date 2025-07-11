@@ -26,7 +26,7 @@ define('FRAMEWORK_DATABASE', [
 ]);
 ```
 
-``/System/Core/Config/App.php``
+``/App/Config/AppConfig.php``
 ```php
 public array $geetest
 public array $email

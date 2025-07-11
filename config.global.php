@@ -12,7 +12,7 @@ define('FRAMEWORK_DIR', dirname(__FILE__));
  * 
  * @var int
  */
-define('FRAMEWORK_VERSION', '2.5.0.1');
+define('FRAMEWORK_VERSION', '2.6.0.0');
 
 /**
  * 当前系统文件目录
@@ -37,6 +37,8 @@ define('FRAMEWORK_APP_PATH', FRAMEWORK_DIR . '/App');
 
 /**
  * 日志目录
+ * 
+ * @var string
  */
 define('FRAMEWORK_LOG_DIR', FRAMEWORK_DIR . '/Writable/logs');
 
@@ -54,10 +56,3 @@ define('FRAMEWORK_DATABASE', [
     'password' => '',
     'charset' => ''
 ]);
-
-/**
- * 安装锁 为true时表示已经安装
- * 
- * @var bool
- */
-define('FRAMEWORK_INSTALL_LOCK', true);
