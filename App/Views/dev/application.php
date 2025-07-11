@@ -34,6 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            if (XQPF\Core\Modules\Database\Base::select('third_party_apps', ['*'], ['app_name' => $appName])) {
+                throw new Exception('应用名：' . $appName .  '已被注册/已被他人注册！');
+            }
+
             // 生成随机的App ID和App Secret
             $appId = bin2hex(random_bytes(8));
             $appSecret = bin2hex(random_bytes(16));
