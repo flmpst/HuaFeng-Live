@@ -4,6 +4,7 @@ if (!$userHelpers->checkUserLoginStatus()) {
     <div class="mdui-dialog custom-dialog" id="user">
         <div class="mdui-dialog-title mdui-color-grey-800">
             登录/注册<span id="user-auth-msg"></span>
+            <a href="https://live.dfggmc.top/disclaimer.html" target="_blank" rel="noopener noreferrer" class="mdui-btn mdui-ripple mdui-typo">继续填写则同意《免责声明》</a>
         </div>
         <form class="mdui-dialog-content" id="user-form">
             <div id="captcha" style="left: 60%;top: 10px;position: absolute;"></div>
@@ -17,7 +18,6 @@ if (!$userHelpers->checkUserLoginStatus()) {
             </div>
         </form>
         <div class="mdui-dialog-actions">
-            <a href="https://live.dfggmc.top/disclaimer.html" target="_blank" rel="noopener noreferrer" class="mdui-btn mdui-ripple mdui-typo">继续填写则同意《免责声明》</a>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
             <button class="mdui-btn mdui-btn-raised mdui-ripple" id="user-auth-btn" style="display: none;">登录/注册</button>
         </div>
@@ -49,7 +49,7 @@ if (!$userHelpers->checkUserLoginStatus()) {
                                     success: function(response) {
                                         $('#user-auth-msg').html(`<span class="mdui-color-red-a700">${response.message}</span>`);
                                         if (response.code === 200) {
-                                            location.href = '/?method=<?= $method ?>&clientid=<?= $clientid ?>';
+                                            location.href = '/';
                                         } else if (response.code === 401) {
                                             captcha.reset();
                                         }
